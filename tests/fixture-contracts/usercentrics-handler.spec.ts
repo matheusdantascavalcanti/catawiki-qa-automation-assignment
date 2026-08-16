@@ -12,7 +12,7 @@ test.beforeEach(async ({ page }) => {
     </style>
     <button id="target" type="button">Target action</button>
     <aside id="usercentrics-cmp-ui" hidden>
-      <button type="button">Accept all cookies</button>
+      <button type="button">Accept all</button>
     </aside>
     <script>
       window.dismissalCount = 0;
@@ -30,7 +30,25 @@ test.beforeEach(async ({ page }) => {
   `);
 });
 
-test('handles a delayed known Usercentrics action', async ({ page }) => {
+async function showUsercentricsAction(
+  page: import('@playwright/test').Page,
+  actionName: string,
+): Promise<void> {
+  await page
+    .locator('aside#usercentrics-cmp-ui')
+    .evaluate((usercentrics, name) => {
+      const action = usercentrics.querySelector('button');
+
+      if (action === null) {
+        throw new Error('Expected the Usercentrics action fixture.');
+      }
+
+      action.textContent = name;
+      usercentrics.removeAttribute('hidden');
+    }, actionName);
+}
+
+test('handles a delayed Accept all action', async ({ page }) => {
   const overlay = page.locator('aside#usercentrics-cmp-ui');
 
   await page.evaluate(() => {
@@ -53,6 +71,41 @@ test('handles a delayed known Usercentrics action', async ({ page }) => {
   await expect
     .poll(() => page.evaluate(() => window.targetActionCount))
     .toBe(1);
+});
+
+for (const actionName of [
+  'Accept All',
+  'Accept All Cookies',
+  'Continue In English',
+]) {
+  test(`handles the approved ${actionName} capitalization`, async ({
+    page,
+  }) => {
+    await showUsercentricsAction(page, actionName);
+
+    await page.getByRole('button', { name: 'Target action' }).click();
+
+    await expect.poll(() => page.evaluate(() => window.dismissalCount)).toBe(1);
+    await expect
+      .poll(() => page.evaluate(() => window.targetActionCount))
+      .toBe(1);
+  });
+}
+
+test('does not handle an unrelated Usercentrics label', async ({ page }) => {
+  const overlay = page.locator('aside#usercentrics-cmp-ui');
+  const target = page.getByRole('button', { name: 'Target action' });
+
+  await showUsercentricsAction(page, 'Please Accept All');
+
+  await expect(target.click({ timeout: 500 })).rejects.toThrow(
+    /intercepts pointer events|Timeout/,
+  );
+  await expect(overlay).toBeVisible();
+  await expect.poll(() => page.evaluate(() => window.dismissalCount)).toBe(0);
+  await expect
+    .poll(() => page.evaluate(() => window.targetActionCount))
+    .toBe(0);
 });
 
 test('bounds invocation and leaves exhaustion to normal action failure', async ({

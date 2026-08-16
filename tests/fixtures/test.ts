@@ -22,7 +22,7 @@ const recordFeasibilityEvidence = Boolean(
 const diagnosticsByPage = new WeakMap<Page, NetworkDiagnostics>();
 
 const usercentricsActionName =
-  /^(Accept all|Accept all cookies|Continue in English)$/;
+  /^(Accept all|Accept all cookies|Continue in English)$/i;
 
 async function registerUsercentricsHandler(page: Page): Promise<void> {
   const action = page

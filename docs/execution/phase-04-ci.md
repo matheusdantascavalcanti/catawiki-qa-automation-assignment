@@ -99,15 +99,16 @@ Answered before implementation:
 - The final zero-retry, one-worker run preserved its HTML report, trace, screenshot,
   error context, and bounded diagnostic summary with three-day artifact retention.
 - That run failed because the handler's case-sensitive `Accept all` pattern did not
-  match the live `Accept All` accessible name. This is a concrete framework defect,
-  not live-product instability, infrastructure failure, or target-access rejection.
+  match the live `Accept All` accessible name. This concrete framework defect has now
+  been corrected locally with exact, anchored, case-insensitive matching for only the
+  three accepted actions. It was not live-product instability, infrastructure failure,
+  or target-access rejection.
 
 Open before Phase 04 implementation:
 
-- Correct the known-action matching semantics and extend the network-free contract to
-  cover the live title-cased accessible name in a separate implementation session.
-- Obtain separately authorized hosted acceptance after that correction; do not repeat
-  the production run from this session.
+- Obtain independent review of the locally corrected known-action matching semantics
+  and expanded network-free contract, then seek explicit authorization for a separate
+  hosted acceptance. Do not repeat the production run from this session.
 - Is seven-day artifact retention supported and sufficient for the final repository
   settings? The feasibility workflow uses shorter temporary retention only.
 - Does GitHub matrix `max-parallel: 1` visibly serialize all four jobs in the eventual
@@ -172,6 +173,15 @@ timeout. The trace proves that the handler registered with a case-sensitive `Acc
 all` pattern while the live button's accessible name was `Accept All`, so the handler
 did not invoke. The browser exited normally and diagnostics remained `UNKNOWN`.
 
+The matcher has since been corrected locally to remain exact and anchored while
+matching capitalization case-insensitively. Its scope is still limited to buttons below
+`aside#usercentrics-cmp-ui` whose complete accessible name is `Accept all`, `Accept all
+cookies`, or `Continue in English`; the fixture ownership, normal click, default
+disappearance wait, and two-invocation bound are unchanged. Network-free fixture
+contracts now cover the live `Accept All` form, additional approved capitalization,
+unrelated labels, delayed appearance, exhaustion, unrelated action failure, and
+arbitrary-dialog isolation. No hosted browser run has validated this correction yet.
+
 The temporary workflow successfully uploaded the 22.9 MB
 [`phase-04-feasibility-evidence` artifact](https://github.com/matheusdantascavalcanti/catawiki-qa-automation-assignment/actions/runs/31960349299/artifacts/9267074415)
 with the HTML report, trace, screenshot, error context, and bounded diagnostic evidence;
@@ -181,12 +191,13 @@ it expires on 2026-08-19. No second production run was launched.
 reachability is proven, managed full Chromium installation and execution are proven,
 and no WAF rejection occurred. The final acceptance run classified the remaining
 failure as another concrete framework defect: known-action matching was accidentally
-case-sensitive. It did not indicate unsuitable live-product instability,
-infrastructure failure, or target-access rejection.
+case-sensitive. That defect is corrected locally but awaits independent review and an
+explicitly authorized hosted acceptance. It did not indicate unsuitable live-product
+instability, infrastructure failure, or target-access rejection.
 
 GitHub-hosted CI has not been abandoned, and the state should not be summarized merely
 as “Outcome C.” However, GitHub-hosted smoke is not yet proven feasible as a mandatory
-gate because the acceptance signal remains unmet. Correct the matching semantics and
-obtain one separately authorized acceptance result in a future session before starting
-the final Phase 04 gate or artifact architecture. Do not build the broader browser
-matrix during this feasibility work.
+gate because the acceptance signal remains unmet. Obtain independent review of the
+local correction and one separately authorized acceptance result in a future session
+before starting the final Phase 04 gate or artifact architecture. Do not build the
+broader browser matrix during this feasibility work.
