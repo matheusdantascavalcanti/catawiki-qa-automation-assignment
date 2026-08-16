@@ -6,6 +6,10 @@ on:
 permissions:
   contents: read
 
+concurrency:
+  group: manual-production-regression
+  cancel-in-progress: false
+
 jobs:
   regression:
     name: ${{ matrix.project }} regression

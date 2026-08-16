@@ -71,11 +71,14 @@ src/
     auction-display.ts
   diagnostics/
     network-diagnostics.ts
+  support/
+    known-consent-interactions.ts
 
 tests/
   fixtures/
     test.ts
   fixture-contracts/
+    header-search-recovery.spec.ts
     usercentrics-handler.spec.ts
   e2e/
     assignment.spec.ts
@@ -94,6 +97,11 @@ tests/
 - Open the configured English Catawiki base URL.
 - Make the search interaction ready on desktop or mobile.
 - Submit a query using the button by default or Enter when requested.
+- Give the asynchronously rendered search input a capability-owned ten-second
+  readiness budget without changing global assertion or action timeouts.
+- Restore compact search once only when the known consent handler ran and the compact
+  UI consequently collapsed during readiness or before button submission completed;
+  restore the query and resubmit once in the submission case.
 - Assert the narrow expanded search-control accessibility contract.
 - Hide responsive DOM differences without hiding the product behavior.
 
@@ -180,6 +188,17 @@ delayed Usercentrics panel. It matches only `Accept all`, `Accept all cookies`, 
 and is removed after two invocations. Playwright retains ownership of waiting for the
 triggering overlay to disappear. This keeps consent handling invisible to test authors
 without creating a generic overlay abstraction or consuming arbitrary dialogs.
+
+The fixture also records successful known-consent interactions privately. `HeaderSearch`
+uses that evidence only when a button submission fails and the search input is hidden
+while exactly one compact opener is visible. It may then reopen once, restore the
+original query if needed, and make one direct second submission. Desktop, Enter-key,
+unrelated-action, and second-attempt failures keep their normal behavior.
+
+The same exact evidence permits one readiness reopen when consent arrives after the
+compact opener was used but before the input becomes ready. This bounded case was
+observed during the required local mobile validation; it does not create a general
+visibility retry.
 
 Record only:
 

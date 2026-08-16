@@ -322,3 +322,57 @@ failed flaky signal.
 
 **Alternatives:** Upload every clean run, retain artifacts long-term, or add a custom
 reporter or external dashboard.
+
+## D029 — Serialize separate manual regression dispatches
+
+**Status:** Accepted
+
+**Context:** Matrix `max-parallel: 1` serializes projects inside one workflow run but
+does not prevent two separately dispatched runs from contacting production together.
+
+**Decision:** Give manual production regression one constant workflow-level
+concurrency group with `cancel-in-progress: false`. A later dispatch waits for the
+active run, while the Quality workflow retains its independent per-PR cancellation
+group.
+
+**Alternatives:** Rely only on matrix serialization, share Quality concurrency, cancel
+the active regression, or launch overlapping runs to manufacture validation evidence.
+
+## D030 — Own asynchronous search readiness in HeaderSearch
+
+**Status:** Accepted
+
+**Context:** The first hosted WebKit regression showed the correct semantic combobox
+appearing shortly after the default five-second assertion budget on both attempts. No
+selector, consent, or browser-compatibility defect was identified.
+
+**Decision:** Apply a ten-second timeout only to the final search-input visibility
+assertion in `ensureSearchReady()`. Keep global assertion, action, navigation, and test
+timeouts unchanged.
+
+**Alternatives:** Increase framework-wide timeouts, add a fixed wait, or introduce
+browser-specific selectors or branches.
+
+## D031 — Recover one consent-collapsed compact submission
+
+**Status:** Accepted
+
+**Context:** The first hosted mobile regression showed the existing fixture handler
+successfully dismiss delayed known consent, after which the product collapsed compact
+search and left the pending Search click targeting a hidden button.
+
+**Decision:** Privately record successful known-consent handler interactions. If and
+only if a button submission then fails before reaching the expected query URL, the
+input is hidden, and exactly one compact opener is visible, `HeaderSearch` may reopen
+once, restore the original query only when needed, and submit once more. The second
+failure surfaces directly. Deterministic locally fulfilled fixture contracts cover the
+normal path, recovery, one-attempt bound, unrelated failures, and dialog isolation.
+
+Required local mobile validation subsequently observed the same known handler collapse
+compact search after the opener action but before initial input readiness. The same
+evidence predicate permits one readiness reopen in that state; this is separate from
+and does not broaden failed-action recovery.
+
+**Alternatives:** Change the working handler or its bound, retry arbitrary click
+failures, expose responsive details to specs, force-click, sleep, or add browser-specific
+logic.

@@ -1,6 +1,6 @@
 # Phase 04 — Product/browser CI expansion
 
-**Status:** Implementation complete; independent review pending
+**Status:** Accepted independent-review findings addressed
 
 ## Objective
 
@@ -162,17 +162,25 @@ created four independently visible jobs. Their execution windows never overlappe
 | mobile Chromium | 18:18:58–18:20:26 | Chromium         | 1 mobile spec          | failed both attempts               |
 
 `fail-fast: false` was effective: WebKit and mobile Chromium ran after the Firefox
-failure. The Firefox first attempt timed out opening the observed lot and its retry
-completed the journey, so fail-on-flaky correctly kept the job red. WebKit missed the
-five-second search-input readiness assertion on both attempts. Mobile Chromium could
-not complete the search-button click around delayed consent handling on either attempt.
-All three failures had HTTP 200 main documents and `UNKNOWN` diagnostics rather than
-conclusive target blocking. Their seven-day artifacts were independently named
+failure. Chromium passed the broader three-test portfolio. Firefox attempt zero selected
+the correct second lot and began the correct navigation request, but the response
+stalled through the navigation timeout; its isolated retry completed successfully, so
+fail-on-flaky correctly kept the job red. No concrete Firefox automation defect was
+identified, and the external cause is not known from the available evidence.
+
+WebKit missed the five-second search-input readiness assertion on both attempts. The
+semantic combobox appeared shortly after that budget, establishing an automation-owned
+capability-readiness defect rather than a product/browser compatibility defect. Mobile
+Chromium exposed a separate automation-owned recovery race: the fixture handler
+correctly matched and dismissed delayed `Accept All`, but that interaction collapsed
+compact search before the pending Search click completed. All three failures had HTTP
+200 main documents and `UNKNOWN` diagnostics. Their seven-day artifacts were
+independently named
 `regression-firefox-failure-31963984150`,
 `regression-webkit-failure-31963984150`, and
 `regression-mobile-chromium-failure-31963984150`; the downloaded reports contained
 traces, screenshots, error contexts, and bounded diagnostics. The matrix was not
-repeated because it exposed compatibility signals, not a workflow correction.
+repeated before the evidence was independently reviewed.
 
 Actual job logs show `Contents: read` and implicit `Metadata: read` only, with checkout
 credential persistence disabled. No secrets, write permissions, schedule, browser
@@ -186,5 +194,48 @@ therefore made zero browser requests. The trigger and guard were immediately rem
 the committed workflow is `workflow_dispatch` only.
 
 All controlled validation files and triggers are absent from the final PR diff.
-Implementation is ready for a fresh independent review; this session does not claim
-that review or merge PR #5.
+
+## Independent-review resolution
+
+The accepted findings are addressed without redesigning the approved CI or fixture
+architecture:
+
+- manual regression has the dedicated constant concurrency group
+  `manual-production-regression` with `cancel-in-progress: false`; matrix
+  `max-parallel: 1`, `fail-fast: false`, and dispatch-only execution remain unchanged;
+- `HeaderSearch.ensureSearchReady()` gives only its final semantic-combobox visibility
+  assertion a ten-second capability-owned budget; global five-second assertions,
+  ten-second actions, 30-second navigation, and the 60-second test ceiling remain
+  unchanged;
+- fixture-owned Usercentrics matching, normal dismissal, and `times: 2` remain intact;
+  the fixture privately reports a successful known interaction so `HeaderSearch` can
+  recognize the exact collapsed compact state and perform at most one reopen/restore/
+  resubmit recovery;
+- locally fulfilled, network-free fixture contracts prove the simple path, the observed
+  consent-collapse sequence, query restoration, the one-recovery bound, direct second
+  failure, unrelated action failure, and arbitrary-dialog isolation;
+- Firefox received no timeout, retry, selector, or browser-specific change.
+
+The first required local mobile validation after this correction observed delayed known
+consent during initial readiness rather than after query entry. The handler dismissed it
+and compact search collapsed before the input became ready. That concrete evidence uses
+the same private known-interaction plus collapsed-state predicate for one readiness
+reopen; arbitrary visibility failures still surface normally.
+
+Local correction validation used Node 24.19.0 and npm 11.17.0. `npm ci` completed with
+zero reported vulnerabilities; `npm run check` passed; all 13 locally fulfilled
+fixture-contract executions passed; and Playwright discovery retained the intentional
+project scopes. The mandatory Chromium smoke passed once in 5.5 seconds. After the
+readiness observation above was addressed, the targeted mobile Chromium test passed in
+14.1 seconds. No local retry was enabled for either production test.
+
+The configuration-level concurrency evidence follows the supported
+[GitHub Actions concurrency contract](https://docs.github.com/en/actions/how-tos/write-workflows/choose-when-workflows-run/control-workflow-concurrency):
+all manual runs share one workflow-level group, so a new run remains pending behind the
+active run, and `cancel-in-progress: false` does not cancel that active run. No second
+simultaneous production matrix is required merely to demonstrate that configuration.
+
+Historical Playwright reports and traces may contain normal anonymous request headers,
+cookies, or transient WAF/session identifiers. Without beginning Phase 05 or rewriting
+history, the private-to-public review must confirm those artifacts have expired or
+remove them before repository visibility changes.

@@ -144,6 +144,10 @@ The template communicates intent rather than creating a compliance checklist. A 
 The `workflow_dispatch` workflow exposes independent project results:
 
 ```yaml
+concurrency:
+  group: manual-production-regression
+  cancel-in-progress: false
+
 strategy:
   fail-fast: false
   max-parallel: 1
@@ -156,6 +160,11 @@ strategy:
 ```
 
 This is cleaner than one opaque sequential command because each browser/device has its own status and artifacts, and the matrix is easy to extend. Repeated setup is acceptable for an infrequent manual take-home workflow. `max-parallel: 1` is non-negotiable while targeting public production.
+
+The constant workflow-level concurrency group extends that serial contract across
+separate manual dispatches. If one production regression is active, another waits; it
+does not overlap or cancel the active run. The group is dedicated to manual regression
+and is intentionally independent of the Quality workflow's per-PR concurrency group.
 
 Project scope is risk-based:
 
