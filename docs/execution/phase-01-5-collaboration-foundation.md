@@ -124,12 +124,16 @@ Evidence gathered on 2026-08-16 before opening the bootstrap pull request:
   `npm ci` followed by `npm run check` after checkout and Node setup.
 - No browser installation, browser execution, Catawiki request, secret, generated
   artifact, or product-facing automation is part of this increment.
-- Pull-request run
+- The initial attempt of pull-request run
   [31952274680](https://github.com/matheusdantascavalcanti/catawiki-qa-automation-assignment/actions/runs/31952274680)
   completed successfully for commit `961efdd`. Its job record and logs confirm Node
   24.19.0, only the two declared npm commands, and effective token permissions of
   `Contents: read` plus implicit metadata read. No browser installation or Catawiki
   request occurred.
+- Controlled overlapping reruns verified the concurrency policy in GitHub itself:
+  attempt 2 of the older `961efdd` run was cancelled as superseded, while attempt 2 of
+  [run 31952329845](https://github.com/matheusdantascavalcanti/catawiki-qa-automation-assignment/actions/runs/31952329845)
+  completed successfully for the then-current `95ccb31` head.
 
 The pull-request description records the current head's actual validation result. The
 phase remains in progress until the required independent review, any evidence-based
