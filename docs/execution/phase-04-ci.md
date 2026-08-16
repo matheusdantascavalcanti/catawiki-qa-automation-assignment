@@ -1,6 +1,6 @@
 # Phase 04 — Product/browser CI expansion
 
-**Status:** Implementation in progress; independent review pending
+**Status:** Implementation complete; independent review pending
 
 ## Objective
 
@@ -144,6 +144,47 @@ worker.
   seven-day artifact downloaded successfully and contained the HTML report, first and
   retry traces, failure screenshot, error context, and bounded diagnostics JSON.
 
-All controlled validation files were removed immediately after their proof. Manual
-matrix execution, serialization evidence, cancellation evidence, final documentation,
-and independent review remain before implementation closeout.
+Run
+[31963766183](https://github.com/matheusdantascavalcanti/catawiki-qa-automation-assignment/actions/runs/31963766183)
+was superseded by a newer PR commit while static checks were running. GitHub cancelled
+the stale run and its Chromium job had zero steps, proving the per-PR concurrency group
+without adding browser traffic.
+
+Manual dispatch
+[31963984150](https://github.com/matheusdantascavalcanti/catawiki-qa-automation-assignment/actions/runs/31963984150)
+created four independently visible jobs. Their execution windows never overlapped:
+
+| Project         | UTC window        | Installed engine | Selected tests         | Result                             |
+| --------------- | ----------------- | ---------------- | ---------------------- | ---------------------------------- |
+| Chromium        | 18:14:09–18:15:31 | Chromium         | 3 desktop E2E          | passed                             |
+| Firefox         | 18:15:33–18:17:28 | Firefox          | mandatory journey only | flaky retry pass; failed by policy |
+| WebKit          | 18:17:31–18:18:57 | WebKit           | mandatory journey only | failed both attempts               |
+| mobile Chromium | 18:18:58–18:20:26 | Chromium         | 1 mobile spec          | failed both attempts               |
+
+`fail-fast: false` was effective: WebKit and mobile Chromium ran after the Firefox
+failure. The Firefox first attempt timed out opening the observed lot and its retry
+completed the journey, so fail-on-flaky correctly kept the job red. WebKit missed the
+five-second search-input readiness assertion on both attempts. Mobile Chromium could
+not complete the search-button click around delayed consent handling on either attempt.
+All three failures had HTTP 200 main documents and `UNKNOWN` diagnostics rather than
+conclusive target blocking. Their seven-day artifacts were independently named
+`regression-firefox-failure-31963984150`,
+`regression-webkit-failure-31963984150`, and
+`regression-mobile-chromium-failure-31963984150`; the downloaded reports contained
+traces, screenshots, error contexts, and bounded diagnostics. The matrix was not
+repeated because it exposed compatibility signals, not a workflow correction.
+
+Actual job logs show `Contents: read` and implicit `Metadata: read` only, with checkout
+credential persistence disabled. No secrets, write permissions, schedule, browser
+cache, parallel production traffic, or WAF workaround exists.
+
+GitHub does not discover a new dispatch-only workflow before that workflow exists on
+the default branch. To validate before merge, one temporary branch-only `push` trigger
+registered the workflow while an event guard forced its regression job to skip. Run
+[31963888898](https://github.com/matheusdantascavalcanti/catawiki-qa-automation-assignment/actions/runs/31963888898)
+therefore made zero browser requests. The trigger and guard were immediately removed;
+the committed workflow is `workflow_dispatch` only.
+
+All controlled validation files and triggers are absent from the final PR diff.
+Implementation is ready for a fresh independent review; this session does not claim
+that review or merge PR #5.
