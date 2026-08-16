@@ -96,14 +96,18 @@ Answered before implementation:
   main-document request failure, browser crash, or installation failure.
 - The 60-second whole-test ceiling is a proportionate hosted-runner allowance; action,
   navigation, and assertion timeouts remain unchanged.
+- The final zero-retry, one-worker run preserved its HTML report, trace, screenshot,
+  error context, and bounded diagnostic summary with three-day artifact retention.
+- That run failed because the handler's case-sensitive `Accept all` pattern did not
+  match the live `Accept All` accessible name. This is a concrete framework defect,
+  not live-product instability, infrastructure failure, or target-access rejection.
 
 Open before Phase 04 implementation:
 
-- Does one final zero-retry, one-worker smoke complete the real assignment journey
-  after the independently reviewed synchronization corrections?
-- If that acceptance run fails, do its report, trace, screenshot, and diagnostics
-  classify a framework defect, unsuitable live-product instability, infrastructure
-  failure, or target-access rejection?
+- Correct the known-action matching semantics and extend the network-free contract to
+  cover the live title-cased accessible name in a separate implementation session.
+- Obtain separately authorized hosted acceptance after that correction; do not repeat
+  the production run from this session.
 - Is seven-day artifact retention supported and sufficient for the final repository
   settings? The feasibility workflow uses shorter temporary retention only.
 - Does GitHub matrix `max-parallel: 1` visibly serialize all four jobs in the eventual
@@ -150,7 +154,7 @@ Diagnostics again reported `UNKNOWN`. The initial narrow capability recovery was
 replaced during independent-review follow-up by one fixture-owned, exact-name
 Usercentrics locator handler with a two-invocation bound.
 
-The final run,
+The third run,
 [31958965786](https://github.com/matheusdantascavalcanti/catawiki-qa-automation-assignment/actions/runs/31958965786),
 installed and launched the same managed full Chromium and received HTTP 200 for the
 initial `/en/` document. The initial URL predicate nevertheless timed out after five
@@ -158,16 +162,31 @@ seconds while reporting the expected `https://www.catawiki.com/en/` URL, before 
 submission. Diagnostics remained `UNKNOWN`; there was no 401, 403, 429, main-document
 request failure, browser crash, or installation failure. No further run was made.
 
+After the independent-review corrections and green Node 24 local validation, exactly
+one final hosted acceptance run was dispatched:
+[31960349299](https://github.com/matheusdantascavalcanti/catawiki-qa-automation-assignment/actions/runs/31960349299).
+It installed and launched managed full Chromium, returned HTTP 200 for `/en/` and
+`/en/s?q=Train`, and reached the second-lot action with one worker and zero retries. The
+known Usercentrics aside then intercepted the click until the unchanged 10-second action
+timeout. The trace proves that the handler registered with a case-sensitive `Accept
+all` pattern while the live button's accessible name was `Accept All`, so the handler
+did not invoke. The browser exited normally and diagnostics remained `UNKNOWN`.
+
+The temporary workflow successfully uploaded the 22.9 MB
+[`phase-04-feasibility-evidence` artifact](https://github.com/matheusdantascavalcanti/catawiki-qa-automation-assignment/actions/runs/31960349299/artifacts/9267074415)
+with the HTML report, trace, screenshot, error context, and bounded diagnostic evidence;
+it expires on 2026-08-19. No second production run was launched.
+
 **Feasibility status: pre-implementation feasibility in progress.** GitHub-hosted
 reachability is proven, managed full Chromium installation and execution are proven,
-and no WAF rejection occurred. The remaining observed failures point to framework
-synchronization ownership rather than target access. The independently reviewed
-corrections consolidate delayed Usercentrics handling in the fixture, give explicit URL
-waiters sole navigation ownership, and replace the initial predicate assertion with an
-exact native URL regex without increasing any timeout.
+and no WAF rejection occurred. The final acceptance run classified the remaining
+failure as another concrete framework defect: known-action matching was accidentally
+case-sensitive. It did not indicate unsuitable live-product instability,
+infrastructure failure, or target-access rejection.
 
-One final one-worker, zero-retry hosted acceptance run remains. GitHub-hosted CI has not
-been abandoned, and the current state should not be summarized merely as “Outcome C.”
-The mandatory-gate decision remains deliberately open until `npm run test:smoke`
-completes successfully or the preserved final evidence supports a different concrete
-classification. Do not build the broader browser matrix during this feasibility work.
+GitHub-hosted CI has not been abandoned, and the state should not be summarized merely
+as “Outcome C.” However, GitHub-hosted smoke is not yet proven feasible as a mandatory
+gate because the acceptance signal remains unmet. Correct the matching semantics and
+obtain one separately authorized acceptance result in a future session before starting
+the final Phase 04 gate or artifact architecture. Do not build the broader browser
+matrix during this feasibility work.

@@ -100,8 +100,11 @@ across the planned repeat check. `npx playwright install --with-deps chromium` s
 the required browser in GitHub Actions. Phase 04 feasibility has since proven HTTP 200
 reachability without WAF rejection and proven managed full Chromium
 installation/execution on GitHub-hosted Ubuntu. Independently reviewed framework
-synchronization corrections are being applied, and one final one-worker, zero-retry
-acceptance run remains before deciding whether the smoke can become a mandatory gate.
+synchronization corrections were applied, but the single final one-worker, zero-retry
+acceptance run exposed a case-sensitive known-consent-action mismatch. The preserved
+evidence classifies this as a concrete framework defect, not infrastructure or target
+rejection. Hosted CI remains a candidate, but a separately authorized acceptance after
+that narrow correction must pass before the smoke becomes a mandatory gate.
 
 Use a concurrency group keyed by workflow plus pull-request/branch reference and cancel superseded PR runs. This limits stale traffic and keeps feedback relevant.
 
