@@ -64,12 +64,7 @@ export class SearchResults {
     }
 
     try {
-      await Promise.all([
-        this.page.waitForURL(
-          (url) => readLotId(url.toString()) === selected.observation.id,
-        ),
-        selected.link.click(),
-      ]);
+      await this.openSelectedLot(selected);
     } catch (error) {
       this.diagnostics.throwIfTargetAccessFailed();
       throw error;
@@ -77,6 +72,16 @@ export class SearchResults {
 
     this.diagnostics.throwIfTargetAccessFailed();
     return selected.observation;
+  }
+
+  private async openSelectedLot(selected: VisibleLotEntry): Promise<void> {
+    await Promise.all([
+      this.page.waitForURL(
+        (url) => readLotId(url.toString()) === selected.observation.id,
+        { waitUntil: 'domcontentloaded' },
+      ),
+      selected.link.click({ noWaitAfter: true }),
+    ]);
   }
 
   private actualLotLinks(): Locator {

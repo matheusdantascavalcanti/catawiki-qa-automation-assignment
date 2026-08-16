@@ -13,6 +13,24 @@ interface ProductFixtures {
 
 const diagnosticsByPage = new WeakMap<Page, NetworkDiagnostics>();
 
+const usercentricsActionName =
+  /^(Accept all|Accept all cookies|Continue in English)$/i;
+
+async function registerUsercentricsHandler(page: Page): Promise<void> {
+  const action = page
+    .locator('aside#usercentrics-cmp-ui')
+    .getByRole('button', { name: usercentricsActionName })
+    .first();
+
+  await page.addLocatorHandler(
+    action,
+    async (visibleAction) => {
+      await visibleAction.click();
+    },
+    { times: 2 },
+  );
+}
+
 function diagnosticsFor(page: Page): NetworkDiagnostics {
   const diagnostics = diagnosticsByPage.get(page);
 
@@ -28,6 +46,7 @@ export const test = base.extend<ProductFixtures>({
     const diagnostics = new NetworkDiagnostics(page);
     diagnosticsByPage.set(page, diagnostics);
     diagnostics.start();
+    await registerUsercentricsHandler(page);
 
     await use(page);
 

@@ -288,3 +288,22 @@ identities, or ranking.
 
 **Alternatives:** Defer the scenario despite repeatable evidence, or hardcode the
 current related-object count/content.
+
+## D027 — Keep known delayed consent recovery fixture-owned and bounded
+
+**Status:** Accepted
+
+**Context:** Hosted feasibility runs observed the same delayed Usercentrics UI around
+search and lot-navigation actions. Capability-specific visibility prechecks and retry
+catches duplicated framework plumbing and could obscure action ownership.
+
+**Decision:** Register one Playwright locator handler in the shared page fixture. Scope
+it below `aside#usercentrics-cmp-ui`, match only the complete `Accept all`, `Accept all
+cookies`, and `Continue in English` action names case-insensitively, click normally,
+retain Playwright's default post-handler disappearance wait, and remove the handler
+after two invocations. Prove delayed handling, approved capitalization, exact-name
+rejection, bounded exhaustion, unrelated action failure, and arbitrary-dialog isolation
+against in-memory page content.
+
+**Alternatives:** Retain capability-specific recovery, create a generic dialog handler,
+force clicks, add sleeps, or retry arbitrary failed actions.

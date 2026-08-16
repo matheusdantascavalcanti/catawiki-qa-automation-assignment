@@ -17,7 +17,7 @@ export default defineConfig({
   reporter: isCI
     ? [['line'], ['html', { open: 'never', outputFolder: 'playwright-report' }]]
     : 'line',
-  timeout: 30_000,
+  timeout: 60_000,
   expect: {
     timeout: 5_000,
   },
@@ -33,6 +33,12 @@ export default defineConfig({
       name: 'unit',
       testDir: './tests/unit',
       testMatch: '**/*.spec.ts',
+    },
+    {
+      name: 'fixture-contracts',
+      testDir: './tests/fixture-contracts',
+      testMatch: '**/*.spec.ts',
+      use: { ...devices['Desktop Chrome'], channel: 'chromium' },
     },
     {
       name: 'chromium',

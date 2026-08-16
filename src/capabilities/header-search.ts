@@ -17,10 +17,7 @@ export class HeaderSearch {
       await this.page.goto('/en/', { waitUntil: 'domcontentloaded' });
     });
 
-    await expect(this.page).toHaveURL(
-      (url) =>
-        url.hostname === 'www.catawiki.com' && /^\/en\/?$/.test(url.pathname),
-    );
+    await expect(this.page).toHaveURL(/^https:\/\/www\.catawiki\.com\/en\/?$/);
     await this.ensureSearchReady();
   }
 
@@ -41,6 +38,7 @@ export class HeaderSearch {
         this.page.waitForURL(
           (url) =>
             url.pathname === '/en/s' && url.searchParams.get('q') === query,
+          { waitUntil: 'domcontentloaded' },
         ),
         submitWith === 'enter'
           ? searchInput.press('Enter', { noWaitAfter: true })
@@ -68,25 +66,11 @@ export class HeaderSearch {
       exact: true,
     });
 
-    await this.dismissObstructionIfVisible();
-
     if (!(await searchInput.isVisible())) {
       await this.openCompactSearchIfPresent();
     }
 
-    try {
-      await expect(searchInput).toBeVisible();
-    } catch (error) {
-      if (!(await this.dismissObstructionIfVisible())) {
-        throw error;
-      }
-
-      if (!(await searchInput.isVisible())) {
-        await this.openCompactSearchIfPresent();
-      }
-
-      await expect(searchInput).toBeVisible();
-    }
+    await expect(searchInput).toBeVisible();
   }
 
   private async clickSearchButton(): Promise<void> {
@@ -95,15 +79,7 @@ export class HeaderSearch {
       exact: true,
     });
 
-    try {
-      await searchButton.click({ noWaitAfter: true });
-    } catch (error) {
-      if (!(await this.dismissObstructionIfVisible())) {
-        throw error;
-      }
-
-      await searchButton.click({ noWaitAfter: true });
-    }
+    await searchButton.click({ noWaitAfter: true });
   }
 
   private async openCompactSearchIfPresent(): Promise<void> {
@@ -121,31 +97,8 @@ export class HeaderSearch {
     }
 
     if (openerCount === 1) {
-      try {
-        await compactSearchOpener.click();
-      } catch (error) {
-        if (!(await this.dismissObstructionIfVisible())) {
-          throw error;
-        }
-
-        await compactSearchOpener.click();
-      }
+      await compactSearchOpener.click();
     }
-  }
-
-  private async dismissObstructionIfVisible(): Promise<boolean> {
-    const obstructionAction = this.page
-      .getByRole('button', {
-        name: /^(Accept all(?: cookies)?|Continue in English)$/i,
-      })
-      .first();
-
-    if (!(await obstructionAction.isVisible())) {
-      return false;
-    }
-
-    await obstructionAction.click();
-    return true;
   }
 
   private async withTargetAccessCheck(

@@ -1,6 +1,6 @@
 # Phase 04 — Product/browser CI expansion
 
-**Status:** Not started
+**Status:** Pre-implementation feasibility complete; Phase 04 implementation not started
 
 ## Objective
 
@@ -83,10 +83,60 @@ After pushing to the authorized repository:
 - Browser cache optimization without measured need.
 - Replacing or weakening the Phase 01.5 static gate.
 
-## Questions to answer before proceeding
+## Completed hosted feasibility
 
-- Does the selected GitHub runner image support Node 24 and Playwright 1.62 without workarounds?
-- Is seven-day artifact retention supported and sufficient for the repository settings?
-- Does GitHub matrix `max-parallel: 1` visibly serialize all four jobs in the actual workflow?
-- Do the final `testMatch` rules keep Firefox/WebKit to the required journey and mobile to its scoped case?
-- Does the PR make it obvious that browser CI was introduced only after local suite reliability was established?
+The pre-implementation investigation completed successfully on 2026-08-16 through
+draft PR #4 and branch `agent/phase-04-ci-feasibility`. GitHub-hosted Ubuntu 24.04.4
+supported Node 24.19.0 and Playwright 1.62.1 without a runtime workaround. Playwright
+installed and launched its managed full Chromium executable through the supported
+`channel: 'chromium'` path.
+
+The successful acceptance run,
+[31962223174](https://github.com/matheusdantascavalcanti/catawiki-qa-automation-assignment/actions/runs/31962223174),
+ran the real committed `npm run test:smoke` with one worker and zero retries. The
+initial English page, `Train` results, and selected-lot main documents all returned HTTP
+200, and the mandatory journey passed in 23.4 seconds. No WAF bypass, browser-identity
+spoofing, request alteration, proxy, stored session, or other access-control workaround
+was required.
+
+Earlier runs provided useful failure evidence rather than target-access failures:
+
+- [31958723439](https://github.com/matheusdantascavalcanti/catawiki-qa-automation-assignment/actions/runs/31958723439)
+  completed the journey but exposed that the 30-second whole-test timeout was too
+  narrow for the hosted runner;
+- [31958841967](https://github.com/matheusdantascavalcanti/catawiki-qa-automation-assignment/actions/runs/31958841967)
+  exposed delayed Usercentrics interception around lot navigation;
+- [31958965786](https://github.com/matheusdantascavalcanti/catawiki-qa-automation-assignment/actions/runs/31958965786)
+  exposed an unnecessarily indirect initial URL predicate;
+- [31960349299](https://github.com/matheusdantascavalcanti/catawiki-qa-automation-assignment/actions/runs/31960349299)
+  proved the live `Accept All` capitalization did not match the case-sensitive handler.
+
+Those observations produced durable corrections: a 60-second whole-test ceiling while
+preserving narrower action, assertion, and navigation limits; an exact initial URL
+assertion; explicit `domcontentloaded` ownership for URL waits; exact selected-lot
+continuity; and one fixture-owned Usercentrics locator handler with exact approved
+action names, case-insensitive capitalization, normal clicks, default disappearance
+waiting, and a two-invocation bound. Network-free fixture contracts cover the handler's
+positive, negative, isolation, and exhaustion behavior. Generic failure diagnostics
+remain unchanged.
+
+The temporary manual feasibility workflow, its special console evidence switch, and
+its experiment-only artifact path were removed after the question was answered.
+Historical evidence remains here instead of as a permanently executable experiment.
+
+## Remaining Phase 04 work
+
+Final Phase 04 implementation has not started. It still must:
+
+- extend static quality with a dependent mandatory Chromium smoke job;
+- apply the accepted one-retry, isolated retry, fail-on-flaky policy;
+- publish the final bounded failure/flaky artifact set with an agreed retention period;
+- preserve read-only permissions and concurrency cancellation;
+- add and validate the serial manual Chromium, Firefox, WebKit, and mobile-Chromium
+  regression matrix with project-specific artifacts;
+- document reproduction and artifact interpretation, then complete independent review.
+
+The final work must retain one network worker, avoid schedules and WAF workarounds, and
+prove the static-to-browser dependency and matrix serialization in the implemented
+workflows. None of those final browser-gate or regression workflows are part of the
+feasibility-closeout increment.

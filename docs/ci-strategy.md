@@ -38,15 +38,16 @@ The Chromium job depends on successful static checks. This avoids production tra
 
 The planned final scripts are:
 
-| Command                   | Purpose                                                      | Contacts Catawiki? |
-| ------------------------- | ------------------------------------------------------------ | ------------------ |
-| `npm run check`           | Format check, lint, strict typecheck, browserless unit tests | No                 |
-| `npm run test:unit`       | Auction-display parser tests                                 | No                 |
-| `npm run test:smoke`      | Required Chromium journey                                    | Yes                |
-| `npm run test:regression` | Explicit configured browser/device portfolio                 | Yes                |
-| `npm run test:mobile`     | Mobile Chromium scenario                                     | Yes                |
-| `npm run test:a11y`       | Narrow Chromium keyboard/semantics case                      | Yes                |
-| `npm run test:ui`         | Interactive Chromium debugging                               | Yes                |
+| Command                          | Purpose                                                      | Contacts Catawiki? |
+| -------------------------------- | ------------------------------------------------------------ | ------------------ |
+| `npm run check`                  | Format check, lint, strict typecheck, browserless unit tests | No                 |
+| `npm run test:unit`              | Auction-display parser tests                                 | No                 |
+| `npm run test:fixture-contracts` | In-memory fixture/handler browser contracts                  | No                 |
+| `npm run test:smoke`             | Required Chromium journey                                    | Yes                |
+| `npm run test:regression`        | Explicit configured browser/device portfolio                 | Yes                |
+| `npm run test:mobile`            | Mobile Chromium scenario                                     | Yes                |
+| `npm run test:a11y`              | Narrow Chromium keyboard/semantics case                      | Yes                |
+| `npm run test:ui`                | Interactive Chromium debugging                               | Yes                |
 
 `npm run check` is the normal while-coding command. Before Phase 04 it reproduces the complete PR gate. After Phase 04, `npm run check && npm run test:smoke` reproduces the static plus browser gate for browser-facing changes.
 
@@ -96,10 +97,14 @@ The Chromium project explicitly uses Playwright's `chromium` channel. This selec
 full managed browser in headless mode; the separate default headless shell received an
 initial-document Akamai 403 locally, while the selected channel completed the real spec
 across the planned repeat check. `npx playwright install --with-deps chromium` supplies
-the required browser in GitHub Actions. This local result does not guarantee that
-GitHub-hosted runner traffic will be accepted: Phase 04 must prove one conservative
-smoke run and preserve the existing target-access classification if the runner is
-rejected.
+the required browser in GitHub Actions. Phase 04 feasibility has since proven HTTP 200
+reachability without WAF rejection and proven managed full Chromium installation and
+execution on GitHub-hosted Ubuntu. The feasibility work exposed synchronization and
+known-consent-action matching defects; after those were corrected, the real smoke
+passed with one worker and zero retries in hosted run
+[31962223174](https://github.com/matheusdantascavalcanti/catawiki-qa-automation-assignment/actions/runs/31962223174).
+This completes pre-implementation feasibility only. The mandatory gate, its dependency
+on static quality, final retry semantics, and artifact policy remain Phase 04 work.
 
 Use a concurrency group keyed by workflow plus pull-request/branch reference and cancel superseded PR runs. This limits stale traffic and keeps feedback relevant.
 
