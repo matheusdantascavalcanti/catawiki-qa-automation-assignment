@@ -1,6 +1,6 @@
 # Phase 04 — Product/browser CI expansion
 
-**Status:** Pre-implementation feasibility in progress
+**Status:** Pre-implementation feasibility complete; Phase 04 implementation not started
 
 ## Objective
 
@@ -83,121 +83,60 @@ After pushing to the authorized repository:
 - Browser cache optimization without measured need.
 - Replacing or weakening the Phase 01.5 static gate.
 
-## Feasibility questions
+## Completed hosted feasibility
 
-Answered before implementation:
+The pre-implementation investigation completed successfully on 2026-08-16 through
+draft PR #4 and branch `agent/phase-04-ci-feasibility`. GitHub-hosted Ubuntu 24.04.4
+supported Node 24.19.0 and Playwright 1.62.1 without a runtime workaround. Playwright
+installed and launched its managed full Chromium executable through the supported
+`channel: 'chromium'` path.
 
-- The selected GitHub-hosted runner supports Node 24 and Playwright 1.62 without a
-  runtime workaround.
-- Playwright can install and launch its managed full Chromium on the runner.
-- GitHub-hosted Chromium can reach the initial English page, search results, and a
-  selected lot with HTTP 200 responses.
-- The observed hosted failures were not WAF rejection: there was no 401, 403, 429,
-  main-document request failure, browser crash, or installation failure.
-- The 60-second whole-test ceiling is a proportionate hosted-runner allowance; action,
-  navigation, and assertion timeouts remain unchanged.
-- The final zero-retry, one-worker run preserved its HTML report, trace, screenshot,
-  error context, and bounded diagnostic summary with three-day artifact retention.
-- That run failed because the handler's case-sensitive `Accept all` pattern did not
-  match the live `Accept All` accessible name. This concrete framework defect has now
-  been corrected locally with exact, anchored, case-insensitive matching for only the
-  three accepted actions. It was not live-product instability, infrastructure failure,
-  or target-access rejection.
+The successful acceptance run,
+[31962223174](https://github.com/matheusdantascavalcanti/catawiki-qa-automation-assignment/actions/runs/31962223174),
+ran the real committed `npm run test:smoke` with one worker and zero retries. The
+initial English page, `Train` results, and selected-lot main documents all returned HTTP
+200, and the mandatory journey passed in 23.4 seconds. No WAF bypass, browser-identity
+spoofing, request alteration, proxy, stored session, or other access-control workaround
+was required.
 
-Open before Phase 04 implementation:
+Earlier runs provided useful failure evidence rather than target-access failures:
 
-- Obtain independent review of the locally corrected known-action matching semantics
-  and expanded network-free contract, then seek explicit authorization for a separate
-  hosted acceptance. Do not repeat the production run from this session.
-- Is seven-day artifact retention supported and sufficient for the final repository
-  settings? The feasibility workflow uses shorter temporary retention only.
-- Does GitHub matrix `max-parallel: 1` visibly serialize all four jobs in the eventual
-  manual regression workflow?
-- Do the final `testMatch` rules keep Firefox/WebKit to the required journey and mobile
-  to its scoped case?
-- Does the eventual Phase 04 PR make the static-to-browser gate dependency, artifact
-  policy, and introduction only after local reliability obvious to reviewers?
+- [31958723439](https://github.com/matheusdantascavalcanti/catawiki-qa-automation-assignment/actions/runs/31958723439)
+  completed the journey but exposed that the 30-second whole-test timeout was too
+  narrow for the hosted runner;
+- [31958841967](https://github.com/matheusdantascavalcanti/catawiki-qa-automation-assignment/actions/runs/31958841967)
+  exposed delayed Usercentrics interception around lot navigation;
+- [31958965786](https://github.com/matheusdantascavalcanti/catawiki-qa-automation-assignment/actions/runs/31958965786)
+  exposed an unnecessarily indirect initial URL predicate;
+- [31960349299](https://github.com/matheusdantascavalcanti/catawiki-qa-automation-assignment/actions/runs/31960349299)
+  proved the live `Accept All` capitalization did not match the case-sensitive handler.
 
-## GitHub-hosted Chromium feasibility evidence
+Those observations produced durable corrections: a 60-second whole-test ceiling while
+preserving narrower action, assertion, and navigation limits; an exact initial URL
+assertion; explicit `domcontentloaded` ownership for URL waits; exact selected-lot
+continuity; and one fixture-owned Usercentrics locator handler with exact approved
+action names, case-insensitive capitalization, normal clicks, default disappearance
+waiting, and a two-invocation bound. Network-free fixture contracts cover the handler's
+positive, negative, isolation, and exhaustion behavior. Generic failure diagnostics
+remain unchanged.
 
-Experimented on 2026-08-16 through draft PR #4 and branch
-`agent/phase-04-ci-feasibility`. The temporary workflow used one
-`ubuntu-latest` job with read-only permissions, Node 24, `npm ci`,
-`npx playwright install --with-deps chromium`, and the real committed
-`npm run test:smoke`. The project's `chromium` project continued to select
-`channel: 'chromium'`; no browser identity, request data, session state, proxy, or
-access-control behavior was changed. The feasibility command disabled the existing CI
-retry so each workflow run made only one test attempt.
+The temporary manual feasibility workflow, its special console evidence switch, and
+its experiment-only artifact path were removed after the question was answered.
+Historical evidence remains here instead of as a permanently executable experiment.
 
-Observed environment and installation evidence was consistent across the runs:
+## Remaining Phase 04 work
 
-- GitHub-hosted Ubuntu 24.04.4 LTS on x86_64;
-- Node 24.19.0 and npm 11.17.0;
-- Playwright 1.62.1 installed the required browser and OS dependencies successfully;
-- the installed and launched executable was
-  `/home/runner/.cache/ms-playwright/chromium-1234/chrome-linux64/chrome`, not
-  `chromium-headless-shell`.
+Final Phase 04 implementation has not started. It still must:
 
-The smallest initial run,
-[31958723439](https://github.com/matheusdantascavalcanti/catawiki-qa-automation-assignment/actions/runs/31958723439),
-received HTTP 200 for the initial `/en/` document, the `Train` results document, and
-the selected lot document. It completed the journey and printed the selected lot name,
-favourites, and starting bid, but exceeded the existing 30-second whole-test timeout.
-Diagnostics classified the failure as `UNKNOWN`, not target rejection. The timeout was
-raised to 60 seconds as a legitimate hosted-runner correction without changing action
-or navigation timeouts.
+- extend static quality with a dependent mandatory Chromium smoke job;
+- apply the accepted one-retry, isolated retry, fail-on-flaky policy;
+- publish the final bounded failure/flaky artifact set with an agreed retention period;
+- preserve read-only permissions and concurrency cancellation;
+- add and validate the serial manual Chromium, Firefox, WebKit, and mobile-Chromium
+  regression matrix with project-specific artifacts;
+- document reproduction and artifact interpretation, then complete independent review.
 
-The corrected run,
-[31958841967](https://github.com/matheusdantascavalcanti/catawiki-qa-automation-assignment/actions/runs/31958841967),
-again received HTTP 200 for `/en/` and `/en/s?q=Train`. A delayed named Usercentrics
-panel then intercepted the second-lot click until its 10-second action timeout.
-Diagnostics again reported `UNKNOWN`. The initial narrow capability recovery was later
-replaced during independent-review follow-up by one fixture-owned, exact-name
-Usercentrics locator handler with a two-invocation bound.
-
-The third run,
-[31958965786](https://github.com/matheusdantascavalcanti/catawiki-qa-automation-assignment/actions/runs/31958965786),
-installed and launched the same managed full Chromium and received HTTP 200 for the
-initial `/en/` document. The initial URL predicate nevertheless timed out after five
-seconds while reporting the expected `https://www.catawiki.com/en/` URL, before search
-submission. Diagnostics remained `UNKNOWN`; there was no 401, 403, 429, main-document
-request failure, browser crash, or installation failure. No further run was made.
-
-After the independent-review corrections and green Node 24 local validation, exactly
-one final hosted acceptance run was dispatched:
-[31960349299](https://github.com/matheusdantascavalcanti/catawiki-qa-automation-assignment/actions/runs/31960349299).
-It installed and launched managed full Chromium, returned HTTP 200 for `/en/` and
-`/en/s?q=Train`, and reached the second-lot action with one worker and zero retries. The
-known Usercentrics aside then intercepted the click until the unchanged 10-second action
-timeout. The trace proves that the handler registered with a case-sensitive `Accept
-all` pattern while the live button's accessible name was `Accept All`, so the handler
-did not invoke. The browser exited normally and diagnostics remained `UNKNOWN`.
-
-The matcher has since been corrected locally to remain exact and anchored while
-matching capitalization case-insensitively. Its scope is still limited to buttons below
-`aside#usercentrics-cmp-ui` whose complete accessible name is `Accept all`, `Accept all
-cookies`, or `Continue in English`; the fixture ownership, normal click, default
-disappearance wait, and two-invocation bound are unchanged. Network-free fixture
-contracts now cover the live `Accept All` form, additional approved capitalization,
-unrelated labels, delayed appearance, exhaustion, unrelated action failure, and
-arbitrary-dialog isolation. No hosted browser run has validated this correction yet.
-
-The temporary workflow successfully uploaded the 22.9 MB
-[`phase-04-feasibility-evidence` artifact](https://github.com/matheusdantascavalcanti/catawiki-qa-automation-assignment/actions/runs/31960349299/artifacts/9267074415)
-with the HTML report, trace, screenshot, error context, and bounded diagnostic evidence;
-it expires on 2026-08-19. No second production run was launched.
-
-**Feasibility status: pre-implementation feasibility in progress.** GitHub-hosted
-reachability is proven, managed full Chromium installation and execution are proven,
-and no WAF rejection occurred. The final acceptance run classified the remaining
-failure as another concrete framework defect: known-action matching was accidentally
-case-sensitive. That defect is corrected locally but awaits independent review and an
-explicitly authorized hosted acceptance. It did not indicate unsuitable live-product
-instability, infrastructure failure, or target-access rejection.
-
-GitHub-hosted CI has not been abandoned, and the state should not be summarized merely
-as “Outcome C.” However, GitHub-hosted smoke is not yet proven feasible as a mandatory
-gate because the acceptance signal remains unmet. Obtain independent review of the
-local correction and one separately authorized acceptance result in a future session
-before starting the final Phase 04 gate or artifact architecture. Do not build the
-broader browser matrix during this feasibility work.
+The final work must retain one network worker, avoid schedules and WAF workarounds, and
+prove the static-to-browser dependency and matrix serialization in the implemented
+workflows. None of those final browser-gate or regression workflows are part of the
+feasibility-closeout increment.

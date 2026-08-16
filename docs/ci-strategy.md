@@ -98,13 +98,13 @@ full managed browser in headless mode; the separate default headless shell recei
 initial-document Akamai 403 locally, while the selected channel completed the real spec
 across the planned repeat check. `npx playwright install --with-deps chromium` supplies
 the required browser in GitHub Actions. Phase 04 feasibility has since proven HTTP 200
-reachability without WAF rejection and proven managed full Chromium
-installation/execution on GitHub-hosted Ubuntu. Independently reviewed framework
-synchronization corrections were applied, but the single final one-worker, zero-retry
-acceptance run exposed a case-sensitive known-consent-action mismatch. The preserved
-evidence classifies this as a concrete framework defect, not infrastructure or target
-rejection. Hosted CI remains a candidate, but a separately authorized acceptance after
-that narrow correction must pass before the smoke becomes a mandatory gate.
+reachability without WAF rejection and proven managed full Chromium installation and
+execution on GitHub-hosted Ubuntu. The feasibility work exposed synchronization and
+known-consent-action matching defects; after those were corrected, the real smoke
+passed with one worker and zero retries in hosted run
+[31962223174](https://github.com/matheusdantascavalcanti/catawiki-qa-automation-assignment/actions/runs/31962223174).
+This completes pre-implementation feasibility only. The mandatory gate, its dependency
+on static quality, final retry semantics, and artifact policy remain Phase 04 work.
 
 Use a concurrency group keyed by workflow plus pull-request/branch reference and cancel superseded PR runs. This limits stale traffic and keeps feedback relevant.
 
