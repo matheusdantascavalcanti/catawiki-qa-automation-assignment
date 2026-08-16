@@ -1,6 +1,6 @@
 # Phase 04 — Product/browser CI expansion
 
-**Status:** Not started
+**Status:** Pre-implementation feasibility in progress
 
 ## Objective
 
@@ -83,13 +83,35 @@ After pushing to the authorized repository:
 - Browser cache optimization without measured need.
 - Replacing or weakening the Phase 01.5 static gate.
 
-## Questions to answer before proceeding
+## Feasibility questions
 
-- Does the selected GitHub runner image support Node 24 and Playwright 1.62 without workarounds?
-- Is seven-day artifact retention supported and sufficient for the repository settings?
-- Does GitHub matrix `max-parallel: 1` visibly serialize all four jobs in the actual workflow?
-- Do the final `testMatch` rules keep Firefox/WebKit to the required journey and mobile to its scoped case?
-- Does the PR make it obvious that browser CI was introduced only after local suite reliability was established?
+Answered before implementation:
+
+- The selected GitHub-hosted runner supports Node 24 and Playwright 1.62 without a
+  runtime workaround.
+- Playwright can install and launch its managed full Chromium on the runner.
+- GitHub-hosted Chromium can reach the initial English page, search results, and a
+  selected lot with HTTP 200 responses.
+- The observed hosted failures were not WAF rejection: there was no 401, 403, 429,
+  main-document request failure, browser crash, or installation failure.
+- The 60-second whole-test ceiling is a proportionate hosted-runner allowance; action,
+  navigation, and assertion timeouts remain unchanged.
+
+Open before Phase 04 implementation:
+
+- Does one final zero-retry, one-worker smoke complete the real assignment journey
+  after the independently reviewed synchronization corrections?
+- If that acceptance run fails, do its report, trace, screenshot, and diagnostics
+  classify a framework defect, unsuitable live-product instability, infrastructure
+  failure, or target-access rejection?
+- Is seven-day artifact retention supported and sufficient for the final repository
+  settings? The feasibility workflow uses shorter temporary retention only.
+- Does GitHub matrix `max-parallel: 1` visibly serialize all four jobs in the eventual
+  manual regression workflow?
+- Do the final `testMatch` rules keep Firefox/WebKit to the required journey and mobile
+  to its scoped case?
+- Does the eventual Phase 04 PR make the static-to-browser gate dependency, artifact
+  policy, and introduction only after local reliability obvious to reviewers?
 
 ## GitHub-hosted Chromium feasibility evidence
 
@@ -124,9 +146,9 @@ The corrected run,
 [31958841967](https://github.com/matheusdantascavalcanti/catawiki-qa-automation-assignment/actions/runs/31958841967),
 again received HTTP 200 for `/en/` and `/en/s?q=Train`. A delayed named Usercentrics
 panel then intercepted the second-lot click until its 10-second action timeout.
-Diagnostics again reported `UNKNOWN`. A narrow capability correction reused the
-existing named consent actions and permits one lot-click retry only when that semantic
-obstruction is visible; it does not force a click or bypass access controls.
+Diagnostics again reported `UNKNOWN`. The initial narrow capability recovery was later
+replaced during independent-review follow-up by one fixture-owned, exact-name
+Usercentrics locator handler with a two-invocation bound.
 
 The final run,
 [31958965786](https://github.com/matheusdantascavalcanti/catawiki-qa-automation-assignment/actions/runs/31958965786),
@@ -136,12 +158,16 @@ seconds while reporting the expected `https://www.catawiki.com/en/` URL, before 
 submission. Diagnostics remained `UNKNOWN`; there was no 401, 403, 429, main-document
 request failure, browser crash, or installation failure. No further run was made.
 
-**Feasibility outcome: C — CI execution failure unrelated to target access.** Normal
-GitHub-hosted infrastructure demonstrably reaches Catawiki with supported managed full
-Chromium, but the acceptance signal remains unmet because `npm run test:smoke` did not
-finish with a passing Playwright result. GitHub-hosted live Chromium smoke is therefore
-not yet viable as a mandatory PR/main gate. Phase 04 must not promote it until the
-hosted-runner timing and product-obstruction behavior is independently reviewed and a
-single conservative rerun passes. Until then, keep the network-free static gate in CI
-and keep the live E2E runnable locally or only in an explicitly approved manual
-environment. Do not build the broader browser matrix to compensate for this result.
+**Feasibility status: pre-implementation feasibility in progress.** GitHub-hosted
+reachability is proven, managed full Chromium installation and execution are proven,
+and no WAF rejection occurred. The remaining observed failures point to framework
+synchronization ownership rather than target access. The independently reviewed
+corrections consolidate delayed Usercentrics handling in the fixture, give explicit URL
+waiters sole navigation ownership, and replace the initial predicate assertion with an
+exact native URL regex without increasing any timeout.
+
+One final one-worker, zero-retry hosted acceptance run remains. GitHub-hosted CI has not
+been abandoned, and the current state should not be summarized merely as “Outcome C.”
+The mandatory-gate decision remains deliberately open until `npm run test:smoke`
+completes successfully or the preserved final evidence supports a different concrete
+classification. Do not build the broader browser matrix during this feasibility work.

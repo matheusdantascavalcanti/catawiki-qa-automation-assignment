@@ -35,6 +35,12 @@ export default defineConfig({
       testMatch: '**/*.spec.ts',
     },
     {
+      name: 'fixture-contracts',
+      testDir: './tests/fixture-contracts',
+      testMatch: '**/*.spec.ts',
+      use: { ...devices['Desktop Chrome'], channel: 'chromium' },
+    },
+    {
       name: 'chromium',
       testDir: './tests/e2e',
       testIgnore: '**/*.mobile.spec.ts',

@@ -16,6 +16,7 @@
     "lint": "eslint . --max-warnings=0",
     "typecheck": "tsc --noEmit",
     "test:unit": "playwright test --project=unit",
+    "test:fixture-contracts": "playwright test --project=fixture-contracts",
     "test:smoke": "playwright test --project=chromium --grep @smoke",
     "test:a11y": "playwright test --project=chromium --grep @a11y",
     "test:mobile": "playwright test --project=mobile-chromium",

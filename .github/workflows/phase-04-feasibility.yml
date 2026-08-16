@@ -42,8 +42,20 @@ jobs:
           node --input-type=module --eval "import { chromium } from '@playwright/test'; console.log('Managed Chromium executable: ' + chromium.executablePath());"
 
       - name: Run the real committed smoke test once
+        id: smoke
         env:
           CI: ''
           CI_FEASIBILITY_EVIDENCE: '1'
           DEBUG: pw:browser
-        run: npm run test:smoke
+        run: npm run test:smoke -- --workers=1 --retries=0 --reporter=line,html
+
+      - name: Preserve failed feasibility evidence
+        if: ${{ failure() && steps.smoke.outcome == 'failure' }}
+        uses: actions/upload-artifact@v7
+        with:
+          name: phase-04-feasibility-evidence
+          path: |
+            playwright-report/
+            test-results/
+          if-no-files-found: error
+          retention-days: 3

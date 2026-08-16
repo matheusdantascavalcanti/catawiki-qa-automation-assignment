@@ -63,18 +63,11 @@ export class SearchResults {
       );
     }
 
-    await this.dismissObstructionIfVisible();
-
     try {
       await this.openSelectedLot(selected);
     } catch (error) {
       this.diagnostics.throwIfTargetAccessFailed();
-
-      if (!(await this.dismissObstructionIfVisible())) {
-        throw error;
-      }
-
-      await this.openSelectedLot(selected);
+      throw error;
     }
 
     this.diagnostics.throwIfTargetAccessFailed();
@@ -85,24 +78,10 @@ export class SearchResults {
     await Promise.all([
       this.page.waitForURL(
         (url) => readLotId(url.toString()) === selected.observation.id,
+        { waitUntil: 'domcontentloaded' },
       ),
-      selected.link.click(),
+      selected.link.click({ noWaitAfter: true }),
     ]);
-  }
-
-  private async dismissObstructionIfVisible(): Promise<boolean> {
-    const obstructionAction = this.page
-      .getByRole('button', {
-        name: /^(Accept all(?: cookies)?|Continue in English)$/i,
-      })
-      .first();
-
-    if (!(await obstructionAction.isVisible())) {
-      return false;
-    }
-
-    await obstructionAction.click();
-    return true;
   }
 
   private actualLotLinks(): Locator {

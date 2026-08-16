@@ -47,7 +47,7 @@ Keep these private to `src/` and fixture composition:
 
 - semantic and scoped fallback locators;
 - responsive search-opening logic;
-- conditional obstruction handling;
+- fixture-owned handling for the observed delayed Usercentrics actions;
 - result-card DOM filtering;
 - lot ID/canonical href parsing;
 - auction label/value normalization;
@@ -75,6 +75,8 @@ src/
 tests/
   fixtures/
     test.ts
+  fixture-contracts/
+    usercentrics-handler.spec.ts
   e2e/
     assignment.spec.ts
     search.spec.ts
@@ -91,7 +93,6 @@ tests/
 
 - Open the configured English Catawiki base URL.
 - Make the search interaction ready on desktop or mobile.
-- Handle only a genuinely obstructing consent/locale overlay.
 - Submit a query using the button by default or Enter when requested.
 - Assert the narrow expanded search-control accessibility contract.
 - Hide responsive DOM differences without hiding the product behavior.
@@ -173,6 +174,13 @@ This proves continuity of a business entity across search and detail contexts. I
 
 A small passive collector is registered automatically by the shared fixture module; test authors do not request a diagnostics fixture.
 
+The same page fixture registers one narrowly scoped locator handler for the observed
+delayed Usercentrics panel. It matches only `Accept all`, `Accept all cookies`, or
+`Continue in English` buttons below `aside#usercentrics-cmp-ui`, uses a normal click,
+and is removed after two invocations. Playwright retains ownership of waiting for the
+triggering overlay to disappear. This keeps consent handling invisible to test authors
+without creating a generic overlay abstraction or consuming arbitrary dialogs.
+
 Record only:
 
 - main-frame document navigation URL/status;
@@ -210,7 +218,8 @@ The architecture succeeds when another engineer can:
 
 - Strict TypeScript; no application build output is required.
 - npm with a committed lockfile for reproducible CI.
-- Playwright projects: `unit`, `chromium`, `firefox`, `webkit`, `mobile-chromium`.
+- Playwright projects: network-free `unit` and `fixture-contracts`, plus product-facing
+  `chromium`, `firefox`, `webkit`, and `mobile-chromium`.
 - Networked execution uses one worker and no fully parallel mode.
 - Chromium runs the complete browser portfolio; Firefox/WebKit run the required journey; mobile Chromium runs the responsive scenario.
 - Desktop and mobile Chromium projects use Playwright's full managed `chromium` channel.
