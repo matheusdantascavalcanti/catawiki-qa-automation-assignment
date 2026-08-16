@@ -1,6 +1,6 @@
 # Phase 02 — Required assignment scenario
 
-**Status:** In progress — implementation underway in draft PR #2
+**Status:** Implementation complete — pending independent review in PR #2
 
 ## Objective
 
@@ -104,3 +104,41 @@ Also force one safe local assertion failure to verify that the report contains t
 - Which exact first-party hostnames should the bounded diagnostic collector include?
 - Does attaching diagnostics from the shared fixture preserve evidence from the first failed attempt and the retry?
 - Does the PR make the reusable framework impact understandable independently from the mandatory product scenario?
+
+## Implementation evidence
+
+Evidence gathered on 2026-08-16:
+
+- Draft PR #2 was opened from `feat/assignment-scenario` immediately after the
+  phase-status kickoff commit, before product implementation.
+- Official browser-controlled Playwright exploration completed the anonymous read-only
+  `Train` journey. It confirmed the named search controls, `/en/s?q=Train`, 24 visible
+  actual lot links, second-lot ID/title/href continuity, the primary favourite count,
+  current/starting auction displays, and duplicated responsive auction markup. The
+  durable observations are recorded in `docs/exploration.md`.
+- The fixture API now exposes only `search`, `results`, and `lot` as product
+  capabilities. The mandatory spec imports the project fixture, uses `test.step()`,
+  and attaches the observed lot and auction details as structured JSON.
+- `ObservedLot` preserves numeric ID, normalized visible title, and captured href.
+  `DisplayedAuctionPrice` preserves state, label, raw displayed value, and an optional
+  observed currency symbol without inventing numeric money semantics.
+- The pure auction parser has six table-driven browserless cases covering current,
+  starting, final, spacing/currency preservation, unknown labels, and empty values.
+- Passive diagnostics cap main documents, failed requests, first-party errors, and
+  console errors; classify only conclusive environment/product evidence; and attach
+  JSON on failure. A temporary pre-navigation assertion failure was restored after the
+  HTML report confirmed screenshot, trace, error context, and an expandable bounded
+  `network-diagnostics.json` attachment.
+- `npm run check` passes, including formatting, lint, strict typechecking, and all six
+  unit cases. Playwright discovery lists the unit cases and the one assignment scenario
+  in the intended Chromium/Firefox/WebKit projects.
+- The first local `npm run test:smoke` attempt received an Akamai HTTP 403 for the main
+  document. The framework raised `TargetAccessError` immediately and retained failure
+  artifacts. Per the production-safety policy, execution stopped after that single
+  conclusive block; the three-repeat stability command was not run and no protection
+  bypass was attempted.
+- Static GitHub Actions remains browserless and unchanged. Its final PR result is
+  recorded in the pull-request description after the implementation commits are pushed.
+
+Implementation is complete within Phase 02 boundaries. PR #2 remains open and draft;
+no independent review is claimed, and merge is explicitly pending a fresh review.

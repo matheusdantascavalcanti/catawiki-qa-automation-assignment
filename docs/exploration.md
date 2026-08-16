@@ -119,3 +119,34 @@ Recommendation: do not add a dedicated API test. The available boundary is inter
 - Whether Catawiki starts returning target-level 403/429 responses to CI traffic.
 
 Revalidation may change locators or defer an optional scenario, but must not weaken production-safety boundaries or invent unobserved behavior.
+
+## Phase 02 implementation revalidation
+
+Revalidated on 2026-08-16 with the official browser-controlled Playwright surface:
+
+- `https://www.catawiki.com/en/` normalized to `/en` and remained accessible in the
+  normal in-app browser session. No consent/locale obstruction, CAPTCHA, 403, or 429
+  appeared in that session.
+- The desktop search remained a `combobox` named by the placeholder
+  `Search for brand, model, artist...`; the magnifier remained a button named `Search`.
+  Clicking it with `Train` produced `/en/s?q=Train`, a level-one `Train` heading, and
+  24 visible actual-lot links.
+- Actual results still used `/en/l/<numeric-id>-<slug>` and now included the source
+  query parameters `po=search&poq=Train`. Related collection articles remained outside
+  that identity contract, so href filtering is still required.
+- The second observed actual lot's numeric path ID, visible card title, and href matched
+  the destination URL and level-one lot title exactly after navigation.
+- The primary favourite control exposed `title="favourite"`, a decimal `count`
+  attribute, and the same visible decimal text. Related-lot favourite controls carried
+  `data-testid="lot-card-favorite-button"`, allowing the primary read to stay scoped.
+- The selected detail page displayed `Current bid` with a spaced value (`€ 6` at the
+  observation time); result cards also displayed `Starting bid` and compact values.
+  `Final bid` was not present in this live result set, so its approved parser support
+  remains based on prior evidence rather than a manufactured navigation.
+- The detail DOM contained duplicate, simultaneously visible responsive auction blocks
+  with the same label/value. The capability must deduplicate identical domain values
+  and fail if responsive copies disagree.
+- The standalone local Playwright Chromium runner received a conclusive Akamai 403 on
+  the first main-document request. Validation stopped after that single attempt; no
+  user-agent change, alternate request client, retry loop, or protection bypass was
+  attempted.

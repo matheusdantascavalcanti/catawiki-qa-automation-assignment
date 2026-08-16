@@ -84,7 +84,12 @@ npm run check
 npx playwright test --list --pass-with-no-tests
 ```
 
-Phase 01 intentionally has no browser or unit scenarios. Targeted browser, unit, accessibility, mobile, regression, and interactive-debugging scripts will be documented when genuine suites are introduced in later approved phases. Any future production regression must be run deliberately, never from an editor watch task or automatic local hook.
+Run the browserless parser suite directly with `npm run test:unit`; it is also part of
+`npm run check`. Run the mandatory production journey deliberately with
+`npm run test:smoke`. Networked tests use one worker, must never run from an editor
+watch task or automatic local hook, and must stop when target blocking or rate-limit
+evidence appears. Accessibility, mobile, and broader regression commands remain future
+phase work.
 
 ## Contributor workflow
 

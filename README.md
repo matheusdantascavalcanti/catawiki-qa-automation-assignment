@@ -1,6 +1,9 @@
 # Catawiki QA automation assignment
 
-This repository contains a risk-based Playwright and TypeScript automation framework. Phase 01 provides only the local toolchain and contributor guardrails; it intentionally contains no browser scenarios or Catawiki capabilities yet.
+This repository contains a risk-based Playwright and TypeScript automation framework
+for Catawiki's public, read-only buyer experience. The mandatory scenario searches for
+`Train`, captures the second actual lot before navigation, proves the same lot opened,
+and reports its live title, favourites count, and displayed auction state/value.
 
 ## Prerequisites
 
@@ -24,36 +27,70 @@ npm ci
 
 ## Validate
 
-Run all currently available static checks:
+Run the complete browserless quality gate:
 
 ```bash
 npm run check
 ```
 
-The aggregate check runs formatting verification, ESLint, and strict TypeScript typechecking. To run a single check:
+The aggregate check runs formatting verification, ESLint, strict TypeScript
+typechecking, and the auction-display parser suite. To run a single check or suite:
 
 ```bash
 npm run format:check
 npm run lint
 npm run typecheck
+npm run test:unit
 ```
 
-Verify that Playwright configuration and project discovery load without running a browser or contacting Catawiki:
+Run the required Chromium journey deliberately (this contacts Catawiki production):
 
 ```bash
-npx playwright test --list --pass-with-no-tests
+npm run test:smoke
 ```
 
-The test list is expected to be empty during Phase 01; `--pass-with-no-tests`
-verifies that configuration loads successfully in that intentional state. Browser suite
-commands will be introduced only alongside genuine scenarios in later approved phases.
+Networked execution uses one worker, remains anonymous and read-only, and must stop on
+target blocking or rate-limit evidence. Never use the suite to bypass WAF controls.
+
+## Framework API
+
+Product tests request explicit capabilities from the project fixture:
+
+```ts
+import { test } from '../fixtures/test';
+
+test('opens an observed lot', async ({ search, results, lot }) => {
+  await search.open();
+  await search.searchFor('Train');
+  await results.expectLoadedFor('Train');
+
+  const selectedLot = await results.openLotAtPosition(2);
+  await lot.expectSelectedLot(selectedLot);
+  const details = await lot.readAuctionDetails();
+
+  console.log(details);
+});
+```
+
+- `search` owns English entry, obstructing consent/locale handling, and search-button
+  submission.
+- `results` filters real `/en/l/` lots and returns an `ObservedLot` captured before
+  navigation.
+- `lot` proves ID/title continuity and returns typed auction details.
+- Pure auction parsing translates current/starting/final labels while preserving the
+  displayed value.
+- Passive bounded diagnostics classify conclusive access failures and attach JSON only
+  when a test fails.
+
+Selectors, responsive duplication, URL parsing, and diagnostic listeners stay inside
+the framework. Specs express the user journey through product language.
 
 ## Test author entry point
 
-All future spec and test files import `test` and `expect` from
+All spec and test files import `test` and `expect` from
 `tests/fixtures/test.ts`, never directly from `@playwright/test`. ESLint enforces this
-at the spec/test boundary while allowing the fixture module to remain the simple
-Playwright re-export it needs to be until reusable product capabilities exist.
+at the spec/test boundary. Request only the capabilities the scenario consumes; do not
+instantiate capability classes or expose locators in a spec.
 
 See `docs/adding-tests.md` for contribution conventions and `docs/architecture.md` for the approved framework design.
 
