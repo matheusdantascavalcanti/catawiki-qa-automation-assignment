@@ -1,6 +1,6 @@
 # Phase 02 — Required assignment scenario
 
-**Status:** Not started
+**Status:** In progress — implementation underway in draft PR #2
 
 ## Objective
 
