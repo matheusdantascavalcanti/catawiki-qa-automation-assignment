@@ -1,6 +1,6 @@
 # Phase 01.5 — Private collaboration foundation
 
-**Status:** Not started
+**Status:** In progress — bootstrap PR awaiting independent review
 
 ## Objective
 
@@ -101,3 +101,31 @@ After remote creation and the bootstrap PR:
 - Does the static workflow run successfully on the bootstrap PR without browser installation or Catawiki traffic?
 - Is the repository visibility returned as `PRIVATE` after creation and after merge?
 - Does the PR template improve review comprehension without adding ceremonial fields?
+
+## Implementation evidence
+
+Evidence gathered on 2026-08-16 before opening the bootstrap pull request:
+
+- GitHub CLI 2.91.0 is authenticated to the intended personal account
+  `matheusdantascavalcanti`; the Git author and committer identity is
+  `matheusdantascavalcanti <matheusdantascavalcanti@gmail.com>`.
+- The Phase 01 baseline was clean and contained one intentional commit. Tracked-file,
+  ignore-rule, credential-signature, generated-artifact, and machine-path audits found
+  no material that should be excluded before publication.
+- `matheusdantascavalcanti/catawiki-qa-automation-assignment` was created without an
+  initialization commit. GitHub's API explicitly confirmed private visibility through
+  both its `visibility` and `isPrivate` fields.
+- Remote `main` resolves to the audited Phase 01 commit
+  `e1eee875225deba79ed44a79b9c2b14cb2aead88`.
+- Phase 01.5 implementation is isolated on `chore/collaboration-foundation` and adds
+  the approved five-section pull-request template plus one static workflow.
+- The workflow grants only `contents: read`, cancels superseded runs for the same pull
+  request or branch, restores npm's cache from `package-lock.json`, and runs only
+  `npm ci` followed by `npm run check` after checkout and Node setup.
+- No browser installation, browser execution, Catawiki request, secret, generated
+  artifact, or product-facing automation is part of this increment.
+
+The actual pull-request workflow result and URL will be recorded in the pull-request
+description after GitHub Actions executes. The phase remains in progress until the
+required independent review, any evidence-based follow-up, merge, and post-merge
+privacy/synchronization checks are complete.
