@@ -56,3 +56,13 @@ at the spec/test boundary while allowing the fixture module to remain the simple
 Playwright re-export it needs to be until reusable product capabilities exist.
 
 See `docs/adding-tests.md` for contribution conventions and `docs/architecture.md` for the approved framework design.
+
+## Collaboration workflow
+
+After Phase 01, each approved increment is proposed from a focused branch through a
+pull request. Keep the description current under `Why`, `What changed`, `Framework
+impact`, `Validation`, and `Risks / tradeoffs`, and leave review-driven changes for a
+separate independent review session.
+
+The current GitHub Actions gate runs only `npm ci` and `npm run check` with read-only
+repository access. It does not install browsers or contact Catawiki.
