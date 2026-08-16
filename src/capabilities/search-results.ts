@@ -35,6 +35,23 @@ export class SearchResults {
     return (await this.readEntries()).map((entry) => entry.observation);
   }
 
+  async expectAccessibleFor(query: string): Promise<void> {
+    await expect(
+      this.page.getByRole('heading', { level: 1, name: query, exact: true }),
+    ).toBeVisible();
+    await expect(this.actualLotLinks().first()).toHaveAccessibleName(/\S/);
+  }
+
+  async expectFallbackFor(query: string): Promise<void> {
+    await this.expectLoadedFor(query);
+    await expect(
+      this.page.getByText(
+        'No exact results. Check out these related objects.',
+        { exact: true },
+      ),
+    ).toBeVisible();
+  }
+
   async openLotAtPosition(position: number): Promise<ObservedLot> {
     if (!Number.isInteger(position) || position < 1) {
       throw new Error(

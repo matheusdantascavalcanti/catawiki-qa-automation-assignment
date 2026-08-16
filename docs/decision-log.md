@@ -256,3 +256,34 @@ request data for access-control evasion.
 continue using the rejected headless shell, or attempt anti-detection changes. Headed
 execution is less convenient for CI, branded Chrome adds a host prerequisite, and any
 access-control bypass remains prohibited.
+
+## D025 — Use full managed Chromium for the mobile project
+
+**Status:** Accepted
+
+**Context:** The Phase 02 investigation established that the default Playwright
+headless-shell path was rejected locally while the documented full managed Chromium
+channel passed. The Phase 03 mobile test must use the actual device project and contact
+the same target through an executable runner path.
+
+**Decision:** Configure `mobile-chromium` with the Pixel 7 device profile plus
+`channel: 'chromium'`. Keep the existing responsive opener private to `HeaderSearch`.
+
+**Alternatives:** Leave mobile on the rejected default headless-shell path, manually
+resize the desktop project, or depend on installed branded Chrome.
+
+## D026 — Cover the observed no-exact-results fallback
+
+**Status:** Accepted
+
+**Context:** The fallback scenario was provisional because catalogue behavior could
+make an unlikely query ambiguous. Two fresh serial Playwright Test runs with
+`phase03exactnomatch7f92c4` produced the same query heading, explicit no-exact-results
+message, related-object heading, and real lot links.
+
+**Decision:** Add one Chromium fallback scenario through the existing `search` and
+`results` fixtures. Assert only the query/result readiness and the explicit fallback
+message; do not assert the dynamic related-lot count or identities.
+
+**Alternatives:** Defer the scenario despite repeatable evidence, or hardcode the
+current related-object count/content.

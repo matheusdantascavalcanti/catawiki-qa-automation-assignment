@@ -183,3 +183,34 @@ full managed Chromium executable. The bounded matrix therefore isolates the reje
 to the default headless-shell execution path in this environment; it does not establish
 which private Akamai signal produced that decision. No stealth, fingerprint, header,
 cookie, proxy, CAPTCHA, or anti-detection mechanism was used.
+
+## Phase 03 implementation revalidation
+
+Revalidated on 2026-08-16 through the actual Playwright Test runner using one worker:
+
+- The unchanged Phase 02 assignment spec passed in the committed desktop
+  `channel: 'chromium'` project before Phase 03 implementation expanded.
+- The Enter-key search reached `/en/s?q=Train`; the expanded combobox retained its
+  exact accessible name, the submit button remained named `Search`, the query remained
+  the level-one heading, and a real lot link had a non-empty accessible name.
+- The actual `mobile-chromium` project passed after it selected the same full managed
+  Chromium channel. The Pixel 7 device profile exercised the existing private compact
+  opener and then reused the named expanded controls; no mobile selector entered a spec.
+- The safe unlikely query `phase03exactnomatch7f92c4` was observed in two fresh,
+  serial Chromium runs. Both showed the exact query heading, the stable message
+  `No exact results. Check out these related objects.`, a related-objects heading, and
+  real lot links. Individual related lots and their count remain dynamic and are not
+  asserted.
+- Serial cross-browser execution exposed that the Usercentrics consent panel can become
+  visible after the first search-readiness check. Firefox showed it intercepting the
+  button; mobile showed it arriving before compact expansion. `HeaderSearch` now retries
+  only the affected action when the same named obstruction is visibly present. WebKit
+  also showed duplicate action-level navigation waiting even though the capability
+  already waits for the exact query URL, so the explicit URL contract now owns that
+  wait.
+- After installing the configured Firefox and WebKit binaries, the final six-test
+  serial regression passed across desktop Chromium, Firefox, WebKit, and mobile
+  Chromium without retries.
+
+The observations used normal anonymous browser navigation only. No direct request,
+retry loop, browser-identity change, or WAF/bot-protection bypass was used.

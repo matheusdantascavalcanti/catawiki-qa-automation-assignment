@@ -31,6 +31,12 @@ Before the live smoke journey, install Playwright's managed Chromium browser:
 npx playwright install chromium
 ```
 
+The explicit cross-browser regression also requires the other configured engines:
+
+```bash
+npx playwright install chromium firefox webkit
+```
+
 ## Validate
 
 Run the complete browserless quality gate:
@@ -55,10 +61,19 @@ Run the required Chromium journey deliberately (this contacts Catawiki productio
 npm run test:smoke
 ```
 
+Run the focused extra-coverage paths deliberately:
+
+```bash
+npm run test:a11y
+npm run test:mobile
+npm run test:regression
+```
+
 Networked execution uses one worker, remains anonymous and read-only, and must stop on
 target blocking or rate-limit evidence. The Chromium project uses Playwright's supported
-`chromium` channel so headless execution runs the full managed browser rather than the
-separate headless shell. Never use the suite to bypass WAF controls.
+`chromium` channel for desktop and mobile so headless execution runs the full managed
+browser rather than the separate headless shell. Never use the suite to bypass WAF
+controls.
 
 ## Framework API
 
@@ -81,9 +96,11 @@ test('opens an observed lot', async ({ search, results, lot }) => {
 ```
 
 - `search` owns English entry, obstructing consent/locale handling, responsive search
-  readiness, and button-default or explicitly requested Enter submission.
+  readiness, button-default or explicitly requested Enter submission, and the narrow
+  expanded-control accessibility contract.
 - `results` filters real `/en/l/` lots and returns an `ObservedLot` captured before
-  navigation.
+  navigation. It also owns the result heading/link semantics and the observed
+  no-exact-results fallback contract.
 - `lot` proves ID/title continuity and returns typed auction details.
 - Pure auction parsing translates current/starting/final labels while preserving the
   displayed value.
@@ -92,6 +109,10 @@ test('opens an observed lot', async ({ search, results, lot }) => {
 
 Selectors, responsive duplication, URL parsing, and diagnostic listeners stay inside
 the framework. Specs express the user journey through product language.
+
+The logical portfolio stays focused: the required journey, Enter-key/narrow semantics,
+mobile compact-header search, the observed no-exact-results fallback, and the
+browserless auction parser.
 
 ## Test author entry point
 

@@ -82,3 +82,36 @@ npm run test:regression
 - Is the no-exact-results state deterministic enough for a public production suite? If not, omit it rather than weaken the assertion.
 - Does each additional test add a failure mode not already covered by the required journey?
 - Did the PR demonstrate leverage from Phase 02, or expose a genuine capability boundary that needs evidence-based adjustment?
+
+## Implementation evidence
+
+Evidence gathered on 2026-08-16:
+
+- Draft PR #3 was opened from `test/extended-coverage` immediately after the phase
+  kickoff documentation commit and before scenario implementation.
+- The unchanged Phase 02 assignment spec passed once through the actual Chromium
+  Playwright Test project before implementation expanded, proving the committed
+  `channel: 'chromium'` runner path remained executable.
+- The keyboard/semantic scenario uses the existing
+  `searchFor('Train', { submitWith: 'enter' })` API plus narrow capability contracts for
+  the named expanded search controls, query H1, and a non-empty real-lot link name.
+- The mobile spec contains only `search` and `results` calls. The actual Pixel 7
+  `mobile-chromium` project passed after selecting the same supported full Chromium
+  channel; the compact opener remains private to `HeaderSearch`.
+- The provisional fallback query produced the same explicit no-exact-results message
+  and related real lots in two fresh serial Playwright Test observations. Coverage was
+  accepted without asserting the dynamic related-lot count or identities.
+- The first broad regression attempt could not launch missing Firefox/WebKit binaries;
+  after installing those configured engines, execution exposed a delayed named consent
+  panel in Firefox/mobile and duplicate click-level navigation waiting in WebKit. The
+  existing `HeaderSearch` gained one bounded retry only when that observed semantic
+  obstruction is visible, and the existing exact query-URL waiter now owns submission
+  navigation completion.
+- Final validation passed: `npm run check` (including six unit cases), one targeted
+  `@a11y` Chromium test, one targeted mobile-project test, all three Chromium browser
+  scenarios, and the six-test serial desktop/mobile regression. Discovery lists the
+  five intended logical tests across the configured projects.
+- Framework impact is three product-contract assertion methods plus the evidence-driven
+  readiness correction above. No new fixture, capability class, selector exposure,
+  browser initialization, overlay framework, URL parser, or diagnostic plumbing was
+  required.
