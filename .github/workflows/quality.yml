@@ -1,4 +1,4 @@
-name: Static quality
+name: Quality
 
 on:
   pull_request:
@@ -36,3 +36,42 @@ jobs:
 
       - name: Run static checks
         run: npm run check
+
+  chromium-smoke:
+    name: Chromium @smoke
+    needs: quality
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v7
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+          cache-dependency-path: package-lock.json
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Install managed Chromium
+        run: npx playwright install --with-deps chromium
+
+      - name: Run mandatory Chromium smoke
+        id: browser-test
+        run: npm run test:smoke
+
+      - name: Upload failure evidence
+        if: ${{ !cancelled() && steps.browser-test.outcome == 'failure' }}
+        uses: actions/upload-artifact@v6
+        with:
+          name: chromium-smoke-failure-${{ github.run_id }}
+          path: |
+            playwright-report/
+            test-results/
+          if-no-files-found: error
+          retention-days: 7

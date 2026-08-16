@@ -31,7 +31,8 @@ Before the live smoke journey, install Playwright's managed Chromium browser:
 npx playwright install chromium
 ```
 
-The explicit cross-browser regression also requires the other configured engines:
+Install only the engine needed for a targeted project, or all three for the explicit
+local cross-browser regression:
 
 ```bash
 npx playwright install chromium firefox webkit
@@ -130,5 +131,16 @@ pull request. Keep the description current under `Why`, `What changed`, `Framewo
 impact`, `Validation`, and `Risks / tradeoffs`, and leave review-driven changes for a
 separate independent review session.
 
-The current GitHub Actions gate runs only `npm ci` and `npm run check` with read-only
-repository access. It does not install browsers or contact Catawiki.
+On pull requests and `main`, GitHub Actions first runs `npm ci` and `npm run check` with
+read-only repository access. Only after that network-free job succeeds does one Node 24
+job install managed Chromium and run the mandatory `@smoke` journey with one worker.
+
+The broader Chromium, Firefox, WebKit, and mobile-Chromium regression is
+`workflow_dispatch` only. Its four independently visible jobs run serially and install
+only their selected engine. There is no schedule because these tests read from an
+external live production site without controlled test data or an operational owner.
+
+CI retries a failed browser test once in isolation, but a retry pass is classified as
+flaky and still fails the workflow. For failed or flaky browser runs, download the
+seven-day artifact from the run summary to open the Playwright HTML report and inspect
+the trace, screenshot, and bounded network diagnostics. Clean runs upload no artifact.

@@ -90,8 +90,9 @@ npx playwright test --list --pass-with-no-tests
 
 Run the browserless parser suite directly with `npm run test:unit`; it is also part of
 `npm run check`. Run `npm run test:fixture-contracts` for the small local Chromium
-contract around fixture-owned obstruction handling; it uses in-memory content and does
-not contact Catawiki. Run the mandatory production journey deliberately with `npm run
+contracts around fixture-owned obstruction handling and bounded compact-search
+recovery; they use locally fulfilled content and do not contact Catawiki. Run the
+mandatory production journey deliberately with `npm run
 test:smoke`. Use `npm run test:a11y` for the Enter-key/semantic contract, `npm run
 test:mobile` for the dedicated responsive project, and `npm run test:regression` only
 for an explicit broader local pass. Networked tests use one worker, must never run from
@@ -115,7 +116,10 @@ After the private collaboration foundation exists:
 
 The implementation session owns the change, validation, documentation, and accurate PR description. A fresh review session evaluates it as Staff QA engineer, framework maintainer, and future consumer before any review-driven edits. Agent-assisted review is not represented as a human approval.
 
-Before Phase 04, static CI runs `npm run check` while browser validation remains local. After Phase 04, the PR gate also includes the conservative Chromium smoke. In both stages, CI success supplements rather than replaces local product validation.
+CI runs `npm run check` first and starts the conservative Chromium `@smoke` only after
+static success. The four-project compatibility workflow remains a deliberate manual
+dispatch and runs one project at a time. CI success supplements rather than replaces
+local product validation.
 
 ## Contributor checklist
 
