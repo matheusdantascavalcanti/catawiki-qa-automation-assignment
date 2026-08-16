@@ -137,8 +137,11 @@ Evidence gathered on 2026-08-16:
   artifacts. Per the production-safety policy, execution stopped after that single
   conclusive block; the three-repeat stability command was not run and no protection
   bypass was attempted.
-- Static GitHub Actions remains browserless and unchanged. Its final PR result is
-  recorded in the pull-request description after the implementation commits are pushed.
+- Static GitHub Actions run
+  [31953805700](https://github.com/matheusdantascavalcanti/catawiki-qa-automation-assignment/actions/runs/31953805700)
+  passed for implementation commit `3a03d0e`. The workflow remains browserless and
+  unchanged: it runs `npm ci` and the expanded `npm run check` without contacting
+  Catawiki.
 
 Implementation is complete within Phase 02 boundaries. PR #2 remains open and draft;
 no independent review is claimed, and merge is explicitly pending a fresh review.
