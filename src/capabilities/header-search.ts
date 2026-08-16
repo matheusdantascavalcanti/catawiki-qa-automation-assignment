@@ -121,7 +121,15 @@ export class HeaderSearch {
     }
 
     if (openerCount === 1) {
-      await compactSearchOpener.click();
+      try {
+        await compactSearchOpener.click();
+      } catch (error) {
+        if (!(await this.dismissObstructionIfVisible())) {
+          throw error;
+        }
+
+        await compactSearchOpener.click();
+      }
     }
   }
 

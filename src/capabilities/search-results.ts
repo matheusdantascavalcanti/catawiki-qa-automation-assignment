@@ -19,13 +19,7 @@ export class SearchResults {
   ) {}
 
   async expectLoadedFor(query: string): Promise<void> {
-    this.diagnostics.throwIfTargetAccessFailed();
-    await expect(this.page).toHaveURL(
-      (url) => url.pathname === '/en/s' && url.searchParams.get('q') === query,
-    );
-    await expect(
-      this.page.getByRole('heading', { level: 1, name: query, exact: true }),
-    ).toBeVisible();
+    await this.expectQueryPageFor(query);
     await expect
       .poll(async () => (await this.readEntries()).length)
       .toBeGreaterThanOrEqual(2);
@@ -43,13 +37,14 @@ export class SearchResults {
   }
 
   async expectFallbackFor(query: string): Promise<void> {
-    await this.expectLoadedFor(query);
+    await this.expectQueryPageFor(query);
     await expect(
       this.page.getByText(
         'No exact results. Check out these related objects.',
         { exact: true },
       ),
     ).toBeVisible();
+    await expect(this.actualLotLinks().first()).toHaveAccessibleName(/\S/);
   }
 
   async openLotAtPosition(position: number): Promise<ObservedLot> {
@@ -87,6 +82,16 @@ export class SearchResults {
   private actualLotLinks(): Locator {
     // The href contract distinguishes actual lots from collection/promotional articles.
     return this.page.locator('main article a[href*="/en/l/"]:visible');
+  }
+
+  private async expectQueryPageFor(query: string): Promise<void> {
+    this.diagnostics.throwIfTargetAccessFailed();
+    await expect(this.page).toHaveURL(
+      (url) => url.pathname === '/en/s' && url.searchParams.get('q') === query,
+    );
+    await expect(
+      this.page.getByRole('heading', { level: 1, name: query, exact: true }),
+    ).toBeVisible();
   }
 
   private async readEntries(): Promise<VisibleLotEntry[]> {

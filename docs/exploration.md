@@ -199,15 +199,15 @@ Revalidated on 2026-08-16 through the actual Playwright Test runner using one wo
 - The safe unlikely query `phase03exactnomatch7f92c4` was observed in two fresh,
   serial Chromium runs. Both showed the exact query heading, the stable message
   `No exact results. Check out these related objects.`, a related-objects heading, and
-  real lot links. Individual related lots and their count remain dynamic and are not
-  asserted.
+  real lot links. The fallback contract requires at least one accessible real-lot link;
+  individual related lots, their exact count, and their ranking remain dynamic.
 - Serial cross-browser execution exposed that the Usercentrics consent panel can become
   visible after the first search-readiness check. Firefox showed it intercepting the
   button; mobile showed it arriving before compact expansion. `HeaderSearch` now retries
-  only the affected action when the same named obstruction is visibly present. WebKit
-  also showed duplicate action-level navigation waiting even though the capability
-  already waits for the exact query URL, so the explicit URL contract now owns that
-  wait.
+  only the affected button or compact-opener action, at most once, when the same named
+  obstruction is visibly present. WebKit also showed duplicate action-level navigation
+  waiting even though the capability already waits for the exact query URL, so the
+  explicit URL contract now owns that wait.
 - After installing the configured Firefox and WebKit binaries, the final six-test
   serial regression passed across desktop Chromium, Firefox, WebKit, and mobile
   Chromium without retries.

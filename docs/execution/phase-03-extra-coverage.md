@@ -115,3 +115,12 @@ Evidence gathered on 2026-08-16:
   readiness correction above. No new fixture, capability class, selector exposure,
   browser initialization, overlay framework, URL parser, or diagnostic plumbing was
   required.
+- Review resolution kept delayed-consent recovery local to the compact-opener click:
+  one retry is permitted only after the existing named Usercentrics action is visibly
+  present. The fallback assertion now owns an independent URL, H1, message, and
+  accessible real-lot-link contract while `expectLoadedFor` retains its two-lot
+  workflow precondition.
+- Review-resolution validation under Node 24.19.0 passed `npm run check`, the single
+  `@a11y` Chromium test, the single actual mobile-project test, and all six serial
+  regression executions. Discovery remained 12 project executions representing the
+  same five logical tests.

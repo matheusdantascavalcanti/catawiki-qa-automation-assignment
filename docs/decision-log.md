@@ -282,8 +282,9 @@ make an unlikely query ambiguous. Two fresh serial Playwright Test runs with
 message, related-object heading, and real lot links.
 
 **Decision:** Add one Chromium fallback scenario through the existing `search` and
-`results` fixtures. Assert only the query/result readiness and the explicit fallback
-message; do not assert the dynamic related-lot count or identities.
+`results` fixtures. Assert the exact query URL and H1, the explicit fallback message,
+and at least one accessible real-lot link. Do not assert an exact related-lot count,
+identities, or ranking.
 
 **Alternatives:** Defer the scenario despite repeatable evidence, or hardcode the
 current related-object count/content.
