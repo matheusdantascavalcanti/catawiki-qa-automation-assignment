@@ -1,0 +1,237 @@
+# Decision log
+
+Statuses reflect the approved planning baseline. Implementation evidence may supersede a decision through a new entry; do not silently rewrite history.
+
+## D001 — Use Playwright + TypeScript
+
+**Status:** Accepted
+
+**Context:** The assignment is a browser journey with responsive and accessibility interests. Current Playwright provides typed fixtures, web-first assertions, traces, device projects, and report attachments in one proportionate toolchain.
+
+**Decision:** Use Playwright 1.62.x with strict TypeScript 6.0.x, subject to exact compatible patch versions being locked in Phase 01.
+
+**Alternatives:** Selenium/WebDriver, Cypress, JavaScript without strict typing.
+
+## D002 — Use Node 24 LTS and npm
+
+**Status:** Accepted
+
+**Context:** The project needs a current supported runtime and a universally understandable contributor workflow.
+
+**Decision:** Use Node 24 LTS, npm, and commit `package-lock.json`.
+
+**Alternatives:** pnpm/yarn add little value for this small standalone repository.
+
+## D003 — Treat the framework as an internal product
+
+**Status:** Accepted
+
+**Context:** The role expects groundwork other QA engineers and developers can extend without friction.
+
+**Decision:** Optimize for a small discoverable API, good defaults, documentation, automated guardrails, and failure diagnostics.
+
+**Alternatives:** A collection of independent spec scripts would be quicker initially but would not demonstrate reusable groundwork.
+
+## D004 — Fixtures are the public composition API
+
+**Status:** Accepted
+
+**Context:** Repeated capability construction leaks plumbing into every test and makes framework evolution expensive.
+
+**Decision:** Tests import project `test`/`expect` and request explicit `search`, `results`, and `lot` fixtures. Do not expose a god fixture.
+
+**Alternatives:** Direct constructors in specs; one nested `catawiki` fixture.
+
+## D005 — Use product capabilities, not a BasePage hierarchy
+
+**Status:** Accepted
+
+**Context:** Search is a header/responsive capability and reusable behavior does not align cleanly with one class per page.
+
+**Decision:** Use `HeaderSearch`, `SearchResults`, and `LotDetails` under `src/capabilities/` with composition rather than inheritance.
+
+**Alternatives:** `pages/`, BasePage, PageFactory, generic locator wrappers.
+
+## D006 — Prove selected-lot entity continuity
+
+**Status:** Accepted
+
+**Context:** Promotional cards are mixed with lots and production result ordering changes.
+
+**Decision:** Filter actual `/en/l/` entries, record the second lot's ID/title/href before clicking, and verify the destination matches the recorded entity.
+
+**Alternatives:** Click the second generic card and check only that a lot-like URL opened.
+
+## D007 — Model displayed auction state, preserve raw value
+
+**Status:** Accepted
+
+**Context:** Valid pages showed current, starting, and final bid labels plus formatting variants.
+
+**Decision:** Return typed state plus displayed label/value and optional currency symbol. Omit numeric money parsing until a real arithmetic assertion requires an explicit locale policy.
+
+**Alternatives:** Hardcode `Current bid`; return only raw strings; build a generic localization/money framework.
+
+## D008 — Add one browserless parser layer
+
+**Status:** Accepted
+
+**Context:** Auction display normalization can be proven faster and more completely without browser navigation.
+
+**Decision:** Add a table-driven unit test for the observed label/value variants.
+
+**Alternatives:** Duplicate each format through E2E; manufacture broad unit coverage.
+
+## D009 — Add a dedicated API suite
+
+**Status:** Rejected
+
+**Context:** Exploration found implementation-specific REST-like calls, no suitable public GraphQL contract, and Akamai 403 behavior outside a normal browser session.
+
+**Decision:** Do not automate internal anonymous endpoints or bypass controls. Revisit only if a documented public read-only contract becomes available.
+
+**Alternatives:** APIRequestContext tests, persisted-query clients, contract-test tooling.
+
+## D010 — Add bounded passive failure diagnostics
+
+**Status:** Accepted
+
+**Context:** A target-level 403 should not appear as an unexplained locator timeout.
+
+**Decision:** Record main navigation, final URL, failed requests, first-party errors, and capped console errors; attach concise JSON only on failure.
+
+**Alternatives:** Rely only on screenshots/traces; capture a full HAR/network log; external telemetry.
+
+## D011 — Classify only conclusive failures
+
+**Status:** Accepted
+
+**Context:** Product changes and automation drift can produce identical locator symptoms.
+
+**Decision:** Automatically classify confirmed access/network failures as `ENVIRONMENT`, main-document 5xx as `PRODUCT`, and everything else as `UNKNOWN`. Do not guess `AUTOMATION`.
+
+**Alternatives:** A broad custom error taxonomy based on exception strings.
+
+## D012 — Use predictable action/read/expect naming
+
+**Status:** Accepted
+
+**Context:** Contributors should be able to guess methods through autocomplete.
+
+**Decision:** Actions use verbs, domain queries start `read`, and reusable page contracts start `expect`. Use `openLotAtPosition(2)` with one-based product language.
+
+**Alternatives:** DOM-oriented names or a large prescriptive style guide.
+
+## D013 — Use existing lint guardrails
+
+**Status:** Accepted
+
+**Context:** Strong mechanical conventions should not rely only on reviewers remembering documentation.
+
+**Decision:** Apply `eslint-plugin-playwright` recommended rules and explicit protection against focused/skipped tests, missing awaits, fixed waits, `networkidle`, force, conditional logic, and non-web-first assertions. Configure `expect-expect` for `expect…` capability methods.
+
+**Alternatives:** Custom validators; enabling incompatible `no-nth-methods`, `no-raw-locators`, or `require-tags` rules.
+
+## D014 — Keep tags minimal
+
+**Status:** Accepted
+
+**Context:** Six tags for roughly five logical tests create taxonomy without information.
+
+**Decision:** Use only `@smoke` and `@a11y`. Express browser/device coverage through projects and regression through the configured suite.
+
+**Alternatives:** `@p0`, `@regression`, `@desktop`, `@mobile`, and `@production` on most tests.
+
+## D015 — Retries diagnose; flaky tests fail CI
+
+**Status:** Accepted
+
+**Context:** One retry can reveal intermittence but must not turn an unstable test green.
+
+**Decision:** Local retries zero; CI retries one; `retryStrategy: 'isolated'`; `failOnFlakyTests: true` in CI; retain failure-and-retry traces.
+
+**Alternatives:** No diagnostic retry; multiple immediate retries; accepting a retry pass.
+
+## D016 — Use a serial manual browser matrix
+
+**Status:** Accepted
+
+**Context:** Independent browser results aid diagnosis, but parallel jobs would increase production traffic.
+
+**Decision:** Manual matrix for Chromium, Firefox, WebKit, and mobile Chromium with `max-parallel: 1` and `fail-fast: false`. PR smoke remains Chromium-only.
+
+**Alternatives:** One opaque sequential command; a parallel matrix; all browsers on every PR.
+
+## D017 — Schedule public production regression
+
+**Status:** Rejected
+
+**Context:** The public repository has no controlled environment, test data, or operational ownership.
+
+**Decision:** Provide manual dispatch only. Scheduled broad regression belongs against internal staging/pre-production.
+
+**Alternatives:** Nightly or hourly public runs.
+
+## D018 — Keep production interaction read-only and conservative
+
+**Status:** Accepted
+
+**Context:** Catawiki is an external production marketplace with WAF/rate protections and real transactions.
+
+**Decision:** Anonymous reads only, one network worker, no bot bypass, no accounts, favourites, bids, payments, or state mutation.
+
+**Alternatives:** Test accounts or mutation flows are appropriate only with Catawiki-owned environments and authorization.
+
+## D019 — Reject architecture theatre
+
+**Status:** Accepted
+
+**Context:** Seniority is demonstrated by justified tradeoffs rather than technology count.
+
+**Decision:** Do not add BDD, DI, BasePage/PageFactory, service containers, generic wrappers, Allure, custom reporters, Docker/Kubernetes, Faker, Lighthouse, broad visual/Axe scans, route mocking, GraphQL/contract frameworks, test-management integrations, sharding, or parallel workers without a new evidenced requirement.
+
+**Alternatives:** Add technologies solely to make the repository appear larger or more enterprise-like.
+
+## D020 — Private-first repository lifecycle
+
+**Status:** Accepted
+
+**Context:** The assignment requires a public GitHub repository for submission, while repository-development privacy is preferable until the work is audited and ready. The project should still demonstrate realistic pull-request development rather than appear as a finished one-time upload.
+
+**Decision:** Keep Phase 01 local. After its audit, Phase 01.5 creates `catawiki-qa-automation-assignment` as a private GitHub repository. Use that private repository for branches, pull requests, reviews, and CI. Keep it private through final review and change it to public only after the final approved PR is merged and repository hygiene is verified.
+
+**Why:** This preserves a reviewable collaboration history and real CI evidence while delaying public exposure until submission readiness.
+
+**Alternatives:** Developing every phase locally and publishing one finished snapshot loses evidence of framework evolution. Making the repository public immediately after Phase 01 exposes it before public visibility is required.
+
+## D021 — Use PR-driven increments with independent agent-assisted review
+
+**Status:** Accepted
+
+**Context:** The framework is intended for collaborative extension, so its delivery process should expose architectural intent and reviewability as it grows.
+
+**Decision:** After Phase 01.5, implement each substantial phase on a focused branch through a cohesive PR. A fresh agent/session first reviews the result without modifying it, from Staff QA Automation Engineer, framework-maintainer, and future-consumer perspectives. The implementation session evaluates and addresses valid findings before merge.
+
+**Why:** Separating implementation and review reduces author bias and demonstrates maintainability without pretending an agent review is a human approval.
+
+**Alternatives:** Direct commits to `main`, one final mega-PR, automatically applying every finding, or fabricating reviewers/approvals.
+
+## D022 — Preserve clean but authentic Git history
+
+**Status:** Accepted
+
+**Context:** Commit and PR boundaries can demonstrate how the groundwork enabled later changes, but manufactured or excessively polished history would be misleading.
+
+**Decision:** Retain meaningful commits and phase PR boundaries. Fix accidental noise before merge where practical, use intentional messages, and keep the history representative of actual work. Do not squash the entire assignment at submission time or manufacture timestamps, commits, comments, reviewers, or approvals.
+
+**Alternatives:** One submission commit, dozens of meaningless microcommits, or presentation-only history reconstruction.
+
+## D023 — Keep collaboration mechanics proportionate
+
+**Status:** Accepted
+
+**Context:** This is a small take-home with one contributor. Collaboration discipline is valuable; enterprise ceremony without a real need is not.
+
+**Decision:** Use the sequence branch → PR → CI → independent review → improve → merge, supported by a concise PR template and staged CI.
+
+**Alternatives:** Fake Jira tickets, project boards, sprint planning, fake reviewers, mandatory CODEOWNERS, semantic release, release trains, automated version bumps/changelogs, complex merge queues, multiple approval rules, unnecessary branch-protection theatre, or unused issue templates.

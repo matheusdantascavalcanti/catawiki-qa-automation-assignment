@@ -1,0 +1,28 @@
+{
+  "name": "catawiki-qa-automation-assignment",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Risk-based Playwright and TypeScript QA automation foundation",
+  "type": "module",
+  "engines": {
+    "node": ">=24 <25"
+  },
+  "allowScripts": {
+    "fsevents@2.3.2": true
+  },
+  "scripts": {
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "lint": "eslint . --max-warnings=0",
+    "typecheck": "tsc --noEmit",
+    "check": "npm run format:check && npm run lint && npm run typecheck"
+  },
+  "devDependencies": {
+    "@playwright/test": "1.62.1",
+    "eslint": "10.8.1",
+    "eslint-plugin-playwright": "2.11.0",
+    "prettier": "3.9.6",
+    "typescript": "6.0.3",
+    "typescript-eslint": "8.67.0"
+  }
+}
