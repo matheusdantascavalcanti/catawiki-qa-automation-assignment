@@ -61,8 +61,8 @@ jobs:
       - name: Install managed Chromium
         run: npx playwright install --with-deps chromium
 
-      - name: Run mandatory Chromium smoke
-        run: npm run test:smoke
+      - name: Run controlled retry and artifact validation
+        run: npx playwright test --project=fixture-contracts tests/fixture-contracts/ci-policy-validation.spec.ts
 
       - name: Upload failure evidence
         if: failure()
