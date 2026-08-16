@@ -63,20 +63,46 @@ export class SearchResults {
       );
     }
 
+    await this.dismissObstructionIfVisible();
+
     try {
-      await Promise.all([
-        this.page.waitForURL(
-          (url) => readLotId(url.toString()) === selected.observation.id,
-        ),
-        selected.link.click(),
-      ]);
+      await this.openSelectedLot(selected);
     } catch (error) {
       this.diagnostics.throwIfTargetAccessFailed();
-      throw error;
+
+      if (!(await this.dismissObstructionIfVisible())) {
+        throw error;
+      }
+
+      await this.openSelectedLot(selected);
     }
 
     this.diagnostics.throwIfTargetAccessFailed();
     return selected.observation;
+  }
+
+  private async openSelectedLot(selected: VisibleLotEntry): Promise<void> {
+    await Promise.all([
+      this.page.waitForURL(
+        (url) => readLotId(url.toString()) === selected.observation.id,
+      ),
+      selected.link.click(),
+    ]);
+  }
+
+  private async dismissObstructionIfVisible(): Promise<boolean> {
+    const obstructionAction = this.page
+      .getByRole('button', {
+        name: /^(Accept all(?: cookies)?|Continue in English)$/i,
+      })
+      .first();
+
+    if (!(await obstructionAction.isVisible())) {
+      return false;
+    }
+
+    await obstructionAction.click();
+    return true;
   }
 
   private actualLotLinks(): Locator {
