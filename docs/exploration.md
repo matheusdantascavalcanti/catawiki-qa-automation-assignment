@@ -119,3 +119,67 @@ Recommendation: do not add a dedicated API test. The available boundary is inter
 - Whether Catawiki starts returning target-level 403/429 responses to CI traffic.
 
 Revalidation may change locators or defer an optional scenario, but must not weaken production-safety boundaries or invent unobserved behavior.
+
+## Phase 02 implementation revalidation
+
+Revalidated on 2026-08-16 with the official browser-controlled Playwright surface:
+
+- `https://www.catawiki.com/en/` normalized to `/en` and remained accessible in the
+  normal in-app browser session. No consent/locale obstruction, CAPTCHA, 403, or 429
+  appeared in that session.
+- The desktop search remained a `combobox` named by the placeholder
+  `Search for brand, model, artist...`; the magnifier remained a button named `Search`.
+  Clicking it with `Train` produced `/en/s?q=Train`, a level-one `Train` heading, and
+  24 visible actual-lot links.
+- Actual results still used `/en/l/<numeric-id>-<slug>` and now included the source
+  query parameters `po=search&poq=Train`. Related collection articles remained outside
+  that identity contract, so href filtering is still required.
+- The second observed actual lot's numeric path ID, visible card title, and href matched
+  the destination URL and level-one lot title exactly after navigation.
+- The primary favourite control exposed `title="favourite"`, a decimal `count`
+  attribute, and the same visible decimal text. Related-lot favourite controls carried
+  `data-testid="lot-card-favorite-button"`, allowing the primary read to stay scoped.
+- The selected detail page displayed `Current bid` with a spaced value (`€ 6` at the
+  observation time); result cards also displayed `Starting bid` and compact values.
+  `Final bid` was not present in this live result set, so its approved parser support
+  remains based on prior evidence rather than a manufactured navigation.
+- The detail DOM contained duplicate, simultaneously visible responsive auction blocks
+  with the same label/value. The direct `main` child containing the sole level-one lot
+  heading was the primary detail region; its single bidding-column child contained both
+  `Amount` copies, while the related-lot collection was a sibling region. The capability
+  must scope to that product relationship, deduplicate identical responsive values, and
+  fail if the copies disagree.
+- At a 412 x 915 viewport, the compact header hid the search input behind one visible,
+  unnamed `button.c-header__mobile-nav__search` opener. Clicking it exposed the same
+  named search combobox and `Search` button used by the desktop capability.
+- The standalone local Playwright Chromium runner received a conclusive Akamai 403 on
+  the first main-document request. Validation stopped after that single attempt; no
+  user-agent change, alternate request client, retry loop, or protection bypass was
+  attempted.
+
+## Phase 02 execution-blocker investigation
+
+Investigated on 2026-08-16 under the repository's Node 24 runtime:
+
+- Baseline `npm run test:smoke` used the `chromium` project, Playwright's default
+  headless mode, and a fresh ephemeral context. Its first and only main-document
+  navigation to `https://www.catawiki.com/en/` returned 403. The final URL remained the
+  initial URL and the bounded diagnostics classified the failure as `ENVIRONMENT`.
+- A fresh tab in the official in-app browser reached the same URL and rendered the
+  Catawiki home page and named search controls. This reconfirmed the access discrepancy
+  without reusing cookies in the Playwright Test run.
+- The real `assignment.spec.ts` passed once with headed Playwright-managed Chromium and
+  then passed all three attempts in the planned `--repeat-each=3` stability check.
+- The real spec also passed once with installed Google Chrome 151 in ordinary headless
+  mode. This ruled out headless execution by itself as the blocker; that local Chrome
+  installation was not selected as a repository dependency.
+- The smallest portable comparison, Playwright's documented `channel: 'chromium'`, ran
+  the full Playwright-managed Chromium browser in headless mode. The real spec passed
+  once and then passed all three planned repeat attempts.
+
+Playwright 1.62.1 resolves default headless Chromium to its separate
+`chromium-headless-shell` executable, while the explicit `chromium` channel selects the
+full managed Chromium executable. The bounded matrix therefore isolates the rejection
+to the default headless-shell execution path in this environment; it does not establish
+which private Akamai signal produced that decision. No stealth, fingerprint, header,
+cookie, proxy, CAPTCHA, or anti-detection mechanism was used.

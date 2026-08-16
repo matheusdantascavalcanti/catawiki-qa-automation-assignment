@@ -1,6 +1,6 @@
 # Phase 02 — Required assignment scenario
 
-**Status:** Not started
+**Status:** Execution blocker resolved locally — pending follow-up independent review in PR #2
 
 ## Objective
 
@@ -104,3 +104,90 @@ Also force one safe local assertion failure to verify that the report contains t
 - Which exact first-party hostnames should the bounded diagnostic collector include?
 - Does attaching diagnostics from the shared fixture preserve evidence from the first failed attempt and the retry?
 - Does the PR make the reusable framework impact understandable independently from the mandatory product scenario?
+
+## Implementation evidence
+
+Evidence gathered on 2026-08-16:
+
+- Draft PR #2 was opened from `feat/assignment-scenario` immediately after the
+  phase-status kickoff commit, before product implementation.
+- Official browser-controlled Playwright exploration completed the anonymous read-only
+  `Train` journey. It confirmed the named search controls, `/en/s?q=Train`, 24 visible
+  actual lot links, second-lot ID/title/href continuity, the primary favourite count,
+  current/starting auction displays, and duplicated responsive auction markup. The
+  durable observations are recorded in `docs/exploration.md`.
+- The fixture API now exposes only `search`, `results`, and `lot` as product
+  capabilities. The mandatory spec imports the project fixture, uses `test.step()`,
+  and attaches the observed lot and auction details as structured JSON.
+- `ObservedLot` preserves numeric ID, normalized visible title, and captured href.
+  `DisplayedAuctionPrice` preserves state, label, raw displayed value, and an optional
+  observed currency symbol without inventing numeric money semantics.
+- The pure auction parser has six table-driven browserless cases covering current,
+  starting, final, spacing/currency preservation, unknown labels, and empty values.
+- Passive diagnostics cap main documents, failed requests, first-party errors, and
+  console errors; classify only conclusive environment/product evidence; and attach
+  JSON on failure. A temporary pre-navigation assertion failure was restored after the
+  HTML report confirmed screenshot, trace, error context, and an expandable bounded
+  `network-diagnostics.json` attachment.
+- `npm run check` passes, including formatting, lint, strict typechecking, and all six
+  unit cases. Playwright discovery lists the unit cases and the one assignment scenario
+  in the intended Chromium/Firefox/WebKit projects.
+- The first local `npm run test:smoke` attempt received an Akamai HTTP 403 for the main
+  document. The framework raised `TargetAccessError` immediately and retained failure
+  artifacts. Per the production-safety policy, execution stopped after that single
+  conclusive block; the three-repeat stability command was not run and no protection
+  bypass was attempted.
+- Static GitHub Actions run
+  [31953805700](https://github.com/matheusdantascavalcanti/catawiki-qa-automation-assignment/actions/runs/31953805700)
+  passed for implementation commit `3a03d0e`. The workflow remains browserless and
+  unchanged: it runs `npm ci` and the expanded `npm run check` without contacting
+  Catawiki.
+
+Implementation is complete within Phase 02 boundaries. PR #2 remains open and draft;
+no independent verification of the resolutions is claimed, and merge remains pending.
+
+## Independent review resolution
+
+Resolved on 2026-08-16 after an independent review accepted two findings:
+
+- **Primary auction scoping (blocker):** `LotDetails` no longer searches all visible
+  `Amount` components under `main`. Browser-controlled inspection showed that the sole
+  level-one lot heading and the primary bidding column share one direct `main` child;
+  related-lot collections are sibling regions. The capability now identifies that
+  H1-owned primary region, narrows again to its only direct child containing `Amount`,
+  and deduplicates only responsive copies inside that bidding boundary.
+- **Reusable search contract (important):** `HeaderSearch.searchFor(query)` still uses
+  the magnifier button by default and now accepts the typed option
+  `{ submitWith: 'enter' }`. `ensureSearchReady()` also owns the observed compact-header
+  opener, keeping its unnamed responsive selector out of specs and fixtures.
+
+Focused browser-controlled checks confirmed button and Enter submission both reached
+`/en/s?q=Train`, the corrected primary auction boundary contained the selected lot's
+current-bid display, and the 412 x 915 compact opener revealed the same named search
+combobox and button. `npm run check` passed with all six parser cases. Standalone smoke
+was not repeated after the already conclusive Akamai 403, and no bypass was attempted.
+PR #2 remains open and draft for follow-up review; the resolutions are not represented
+as independently verified or approved.
+
+## Execution-blocker resolution
+
+Resolved locally on 2026-08-16 with a bounded supported-mode investigation:
+
+- The unchanged baseline `npm run test:smoke` reproduced an Akamai 403 on the initial
+  `https://www.catawiki.com/en/` document. Diagnostics reported `ENVIRONMENT`, the final
+  URL remained the initial URL, and no product step ran.
+- The real spec passed in headed Playwright-managed Chromium and passed all three
+  planned repeat attempts.
+- The real spec passed once in installed Google Chrome 151 headless, showing that
+  headless execution alone was not the blocker.
+- The real spec passed in Playwright-managed full Chromium headless using the documented
+  `channel: 'chromium'` option and passed all three planned repeat attempts.
+- Playwright's local 1.62.1 implementation selects `chromium-headless-shell` for default
+  headless Chromium but the full managed executable for the explicit `chromium` channel.
+  The project now selects that standard channel; no browser identity, headers, cookies,
+  browser properties, proxy, or access-control behavior is manipulated.
+
+The supported reviewer command remains `npm run test:smoke` after `npm ci` and
+`npx playwright install chromium`. The journey is anonymous and read-only. Local
+repeatability resolves the Phase 02 execution blocker, but Phase 04 must still validate
+whether GitHub-hosted runner traffic is accepted before making live browser CI mandatory.

@@ -86,11 +86,20 @@ Run on pull requests and main-branch changes:
 2. Set up the selected Node LTS and npm cache.
 3. Install with `npm ci`.
 4. Run `npm run check`.
-5. Install only the Chromium browser and required system dependencies.
+5. Install Playwright's managed Chromium browser and required system dependencies.
 6. Run `npm run test:smoke` with one worker.
 7. Publish HTML report, traces, screenshots, and diagnostic attachments on failure/flakiness.
 
 The smoke gate is Chromium-only and contains the mandatory journey. It extends the existing static workflow; the browser job depends on static success to avoid unnecessary production traffic when code quality already fails.
+
+The Chromium project explicitly uses Playwright's `chromium` channel. This selects the
+full managed browser in headless mode; the separate default headless shell received an
+initial-document Akamai 403 locally, while the selected channel completed the real spec
+across the planned repeat check. `npx playwright install --with-deps chromium` supplies
+the required browser in GitHub Actions. This local result does not guarantee that
+GitHub-hosted runner traffic will be accepted: Phase 04 must prove one conservative
+smoke run and preserve the existing target-access classification if the runner is
+rejected.
 
 Use a concurrency group keyed by workflow plus pull-request/branch reference and cancel superseded PR runs. This limits stale traffic and keeps feedback relevant.
 

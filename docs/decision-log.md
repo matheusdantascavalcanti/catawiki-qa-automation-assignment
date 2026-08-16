@@ -235,3 +235,24 @@ Statuses reflect the approved planning baseline. Implementation evidence may sup
 **Decision:** Use the sequence branch → PR → CI → independent review → improve → merge, supported by a concise PR template and staged CI.
 
 **Alternatives:** Fake Jira tickets, project boards, sprint planning, fake reviewers, mandatory CODEOWNERS, semantic release, release trains, automated version bumps/changelogs, complex merge queues, multiple approval rules, unnecessary branch-protection theatre, or unused issue templates.
+
+## D024 — Use Playwright-managed full Chromium for the live smoke
+
+**Status:** Accepted
+
+**Context:** Playwright 1.62.1's default headless Chromium path uses the separate
+`chromium-headless-shell` executable, which received an Akamai 403 on Catawiki's initial
+document in the local Phase 02 investigation. The real assignment spec passed in headed
+managed Chromium, installed Chrome headless, and managed full Chromium headless through
+the documented `channel: 'chromium'` option. The selected managed channel passed the
+planned three-attempt repeat check.
+
+**Decision:** Configure the `chromium` project with `channel: 'chromium'`. This retains a
+Playwright-installed, headless, portable browser path for local review and future CI
+without depending on a branded browser installation or altering browser identity and
+request data for access-control evasion.
+
+**Alternatives:** Require headed execution, depend on locally installed Google Chrome,
+continue using the rejected headless shell, or attempt anti-detection changes. Headed
+execution is less convenient for CI, branded Chrome adds a host prerequisite, and any
+access-control bypass remains prohibited.

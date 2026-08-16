@@ -38,7 +38,7 @@ export default defineConfig({
       name: 'chromium',
       testDir: './tests/e2e',
       testIgnore: '**/*.mobile.spec.ts',
-      use: { ...devices['Desktop Chrome'] },
+      use: { ...devices['Desktop Chrome'], channel: 'chromium' },
     },
     {
       name: 'firefox',
