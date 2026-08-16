@@ -62,10 +62,11 @@ jobs:
         run: npx playwright install --with-deps chromium
 
       - name: Run mandatory Chromium smoke
+        id: browser-test
         run: npm run test:smoke
 
       - name: Upload failure evidence
-        if: failure()
+        if: ${{ !cancelled() && steps.browser-test.outcome == 'failure' }}
         uses: actions/upload-artifact@v6
         with:
           name: chromium-smoke-failure-${{ github.run_id }}
