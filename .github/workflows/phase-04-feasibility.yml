@@ -1,9 +1,7 @@
 name: Phase 04 CI feasibility
 
 on:
-  push:
-    branches:
-      - agent/phase-04-ci-feasibility
+  workflow_dispatch:
 
 permissions:
   contents: read
