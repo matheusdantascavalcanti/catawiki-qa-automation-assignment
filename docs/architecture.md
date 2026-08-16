@@ -107,7 +107,9 @@ tests/
 
 - Establish that a lot page loaded.
 - Prove it represents an `ObservedLot` selected earlier.
-- Read lot name, favourites, and auction display as one typed value.
+- Read lot name, favourites, and the primary lot's auction display as one typed value.
+- Scope auction reads to the H1-owned primary detail/bidding region before deduplicating
+  responsive copies; related-lot regions are outside that boundary.
 - Keep DOM label/value relationships and parsing private.
 
 Capability assertions are limited to reusable page contracts (`expectLoadedFor`, `expectSelectedLot`). Scenario-specific assertions remain visible in the spec so tests do not become opaque scripts.

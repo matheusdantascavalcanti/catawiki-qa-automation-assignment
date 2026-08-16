@@ -72,8 +72,8 @@ test('opens an observed lot', async ({ search, results, lot }) => {
 });
 ```
 
-- `search` owns English entry, obstructing consent/locale handling, and search-button
-  submission.
+- `search` owns English entry, obstructing consent/locale handling, responsive search
+  readiness, and button-default or explicitly requested Enter submission.
 - `results` filters real `/en/l/` lots and returns an `ObservedLot` captured before
   navigation.
 - `lot` proves ID/title continuity and returns typed auction details.

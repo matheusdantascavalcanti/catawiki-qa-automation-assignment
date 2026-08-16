@@ -144,8 +144,14 @@ Revalidated on 2026-08-16 with the official browser-controlled Playwright surfac
   `Final bid` was not present in this live result set, so its approved parser support
   remains based on prior evidence rather than a manufactured navigation.
 - The detail DOM contained duplicate, simultaneously visible responsive auction blocks
-  with the same label/value. The capability must deduplicate identical domain values
-  and fail if responsive copies disagree.
+  with the same label/value. The direct `main` child containing the sole level-one lot
+  heading was the primary detail region; its single bidding-column child contained both
+  `Amount` copies, while the related-lot collection was a sibling region. The capability
+  must scope to that product relationship, deduplicate identical responsive values, and
+  fail if the copies disagree.
+- At a 412 x 915 viewport, the compact header hid the search input behind one visible,
+  unnamed `button.c-header__mobile-nav__search` opener. Clicking it exposed the same
+  named search combobox and `Search` button used by the desktop capability.
 - The standalone local Playwright Chromium runner received a conclusive Akamai 403 on
   the first main-document request. Validation stopped after that single attempt; no
   user-agent change, alternate request client, retry loop, or protection bypass was

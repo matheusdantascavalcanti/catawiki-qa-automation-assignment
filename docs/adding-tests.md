@@ -18,6 +18,10 @@ test('search behavior', async ({ search, results }) => {
 });
 ```
 
+`searchFor(query)` submits with the magnifier button by default. Pass
+`{ submitWith: 'enter' }` only when the scenario specifically needs keyboard submission;
+responsive search-opening details remain internal to `HeaderSearch`.
+
 Request only the capabilities the test needs. Do not instantiate `HeaderSearch`, `SearchResults`, or `LotDetails` in a spec.
 
 ## Prefer existing capabilities

@@ -1,6 +1,6 @@
 # Phase 02 — Required assignment scenario
 
-**Status:** Implementation complete — pending independent review in PR #2
+**Status:** Review findings resolved — pending follow-up independent review in PR #2
 
 ## Objective
 
@@ -144,4 +144,27 @@ Evidence gathered on 2026-08-16:
   Catawiki.
 
 Implementation is complete within Phase 02 boundaries. PR #2 remains open and draft;
-no independent review is claimed, and merge is explicitly pending a fresh review.
+no independent verification of the resolutions is claimed, and merge remains pending.
+
+## Independent review resolution
+
+Resolved on 2026-08-16 after an independent review accepted two findings:
+
+- **Primary auction scoping (blocker):** `LotDetails` no longer searches all visible
+  `Amount` components under `main`. Browser-controlled inspection showed that the sole
+  level-one lot heading and the primary bidding column share one direct `main` child;
+  related-lot collections are sibling regions. The capability now identifies that
+  H1-owned primary region, narrows again to its only direct child containing `Amount`,
+  and deduplicates only responsive copies inside that bidding boundary.
+- **Reusable search contract (important):** `HeaderSearch.searchFor(query)` still uses
+  the magnifier button by default and now accepts the typed option
+  `{ submitWith: 'enter' }`. `ensureSearchReady()` also owns the observed compact-header
+  opener, keeping its unnamed responsive selector out of specs and fixtures.
+
+Focused browser-controlled checks confirmed button and Enter submission both reached
+`/en/s?q=Train`, the corrected primary auction boundary contained the selected lot's
+current-bid display, and the 412 x 915 compact opener revealed the same named search
+combobox and button. `npm run check` passed with all six parser cases. Standalone smoke
+was not repeated after the already conclusive Akamai 403, and no bypass was attempted.
+PR #2 remains open and draft for follow-up review; the resolutions are not represented
+as independently verified or approved.

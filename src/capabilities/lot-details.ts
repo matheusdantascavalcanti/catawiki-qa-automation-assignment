@@ -1,4 +1,4 @@
-import { expect, type Page } from '@playwright/test';
+import { expect, type Locator, type Page } from '@playwright/test';
 
 import type { NetworkDiagnostics } from '../diagnostics/network-diagnostics.js';
 import type {
@@ -69,12 +69,15 @@ export class LotDetails {
   }
 
   private async readAuctionPrice(): Promise<DisplayedAuctionPrice> {
-    // Catawiki currently renders duplicate responsive auction blocks. Component identity
-    // avoids hashed classes; unique domain values are required before returning one.
-    const amounts = this.page.locator(
-      'main div[data-sentry-component="Amount"]:visible',
+    const auctionRegion = this.primaryAuctionRegion();
+    await expect(auctionRegion).toHaveCount(1);
+
+    // Catawiki renders duplicate responsive copies inside the primary bidding region.
+    // Component identity avoids hashed classes; unique domain values are required.
+    const amounts = auctionRegion.locator(
+      'div[data-sentry-component="Amount"]:visible',
     );
-    await amounts.first().waitFor({ state: 'visible' });
+    await expect.poll(async () => amounts.count()).toBeGreaterThan(0);
     const rawDisplays = await amounts.evaluateAll(
       (elements): RawAuctionDisplay[] =>
         elements.map((element) => ({
@@ -100,5 +103,18 @@ export class LotDetails {
     }
 
     return [...uniqueDisplays.values()][0] as DisplayedAuctionPrice;
+  }
+
+  private primaryAuctionRegion(): Locator {
+    const primaryHeading = this.page.getByRole('heading', { level: 1 });
+    const primaryLotRegion = this.page.locator('main > div').filter({
+      has: primaryHeading,
+    });
+
+    // The bidding column is the single direct child of the primary lot region that
+    // owns an Amount. Related-lot collections are sibling regions outside this scope.
+    return primaryLotRegion.locator(':scope > div').filter({
+      has: this.page.locator('div[data-sentry-component="Amount"]'),
+    });
   }
 }

@@ -4,6 +4,8 @@ import type { NetworkDiagnostics } from '../diagnostics/network-diagnostics.js';
 
 const SEARCH_NAME = 'Search for brand, model, artist...';
 
+export type SearchSubmission = 'button' | 'enter';
+
 export class HeaderSearch {
   constructor(
     private readonly page: Page,
@@ -22,12 +24,16 @@ export class HeaderSearch {
     await this.ensureSearchReady();
   }
 
-  async searchFor(query: string): Promise<void> {
+  async searchFor(
+    query: string,
+    options: { submitWith?: SearchSubmission } = {},
+  ): Promise<void> {
     await this.ensureSearchReady();
     const searchInput = this.page.getByRole('combobox', {
       name: SEARCH_NAME,
       exact: true,
     });
+    const submitWith = options.submitWith ?? 'button';
 
     await searchInput.fill(query);
     await this.withTargetAccessCheck(async () => {
@@ -36,7 +42,11 @@ export class HeaderSearch {
           (url) =>
             url.pathname === '/en/s' && url.searchParams.get('q') === query,
         ),
-        this.page.getByRole('button', { name: 'Search', exact: true }).click(),
+        submitWith === 'enter'
+          ? searchInput.press('Enter')
+          : this.page
+              .getByRole('button', { name: 'Search', exact: true })
+              .click(),
       ]);
     });
   }
@@ -56,6 +66,25 @@ export class HeaderSearch {
 
       if (await obstructionAction.isVisible()) {
         await obstructionAction.click();
+      }
+    }
+
+    if (!(await searchInput.isVisible())) {
+      // The compact header opener currently has no accessible name. Keep this
+      // observed, descriptive product selector private to the capability.
+      const compactSearchOpener = this.page.locator(
+        'button.c-header__mobile-nav__search:visible',
+      );
+      const openerCount = await compactSearchOpener.count();
+
+      if (openerCount > 1) {
+        throw new Error(
+          `Expected at most one compact search opener, received ${openerCount}.`,
+        );
+      }
+
+      if (openerCount === 1) {
+        await compactSearchOpener.click();
       }
     }
 
