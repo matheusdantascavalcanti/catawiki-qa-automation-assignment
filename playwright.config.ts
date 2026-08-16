@@ -56,7 +56,7 @@ export default defineConfig({
       name: 'mobile-chromium',
       testDir: './tests/e2e',
       testMatch: '**/*.mobile.spec.ts',
-      use: { ...devices['Pixel 7'] },
+      use: { ...devices['Pixel 7'], channel: 'chromium' },
     },
   ],
 });

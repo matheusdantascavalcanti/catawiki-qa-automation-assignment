@@ -93,12 +93,15 @@ tests/
 - Make the search interaction ready on desktop or mobile.
 - Handle only a genuinely obstructing consent/locale overlay.
 - Submit a query using the button by default or Enter when requested.
+- Assert the narrow expanded search-control accessibility contract.
 - Hide responsive DOM differences without hiding the product behavior.
 
 ### SearchResults
 
 - Establish results for a requested query using URL plus visible page state.
+- Establish the observed no-exact-results related-object fallback when requested.
 - Scope entries to actual `/en/l/` lot links.
+- Assert the narrow query-heading and real-lot-link accessibility contract.
 - Return typed observations from `readVisibleLots()`.
 - Implement one-based `openLotAtPosition(position)` with bounds validation.
 - Capture ID, title, and href before clicking and return that observation.
@@ -210,6 +213,7 @@ The architecture succeeds when another engineer can:
 - Playwright projects: `unit`, `chromium`, `firefox`, `webkit`, `mobile-chromium`.
 - Networked execution uses one worker and no fully parallel mode.
 - Chromium runs the complete browser portfolio; Firefox/WebKit run the required journey; mobile Chromium runs the responsive scenario.
+- Desktop and mobile Chromium projects use Playwright's full managed `chromium` channel.
 - Reporter: concise terminal output locally and standard HTML artifacts in CI. No custom reporter.
 
 ## Reference repository assessment

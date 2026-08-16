@@ -43,12 +43,23 @@ export class HeaderSearch {
             url.pathname === '/en/s' && url.searchParams.get('q') === query,
         ),
         submitWith === 'enter'
-          ? searchInput.press('Enter')
-          : this.page
-              .getByRole('button', { name: 'Search', exact: true })
-              .click(),
+          ? searchInput.press('Enter', { noWaitAfter: true })
+          : this.clickSearchButton(),
       ]);
     });
+  }
+
+  async expectAccessible(): Promise<void> {
+    await this.ensureSearchReady();
+    await expect(
+      this.page.getByRole('combobox', {
+        name: SEARCH_NAME,
+        exact: true,
+      }),
+    ).toBeVisible();
+    await expect(
+      this.page.getByRole('button', { name: 'Search', exact: true }),
+    ).toBeVisible();
   }
 
   private async ensureSearchReady(): Promise<void> {
@@ -57,38 +68,84 @@ export class HeaderSearch {
       exact: true,
     });
 
-    if (!(await searchInput.isVisible())) {
-      const obstructionAction = this.page
-        .getByRole('button', {
-          name: /^(Accept all(?: cookies)?|Continue in English)$/i,
-        })
-        .first();
+    await this.dismissObstructionIfVisible();
 
-      if (await obstructionAction.isVisible()) {
-        await obstructionAction.click();
-      }
+    if (!(await searchInput.isVisible())) {
+      await this.openCompactSearchIfPresent();
     }
 
-    if (!(await searchInput.isVisible())) {
-      // The compact header opener currently has no accessible name. Keep this
-      // observed, descriptive product selector private to the capability.
-      const compactSearchOpener = this.page.locator(
-        'button.c-header__mobile-nav__search:visible',
-      );
-      const openerCount = await compactSearchOpener.count();
-
-      if (openerCount > 1) {
-        throw new Error(
-          `Expected at most one compact search opener, received ${openerCount}.`,
-        );
+    try {
+      await expect(searchInput).toBeVisible();
+    } catch (error) {
+      if (!(await this.dismissObstructionIfVisible())) {
+        throw error;
       }
 
-      if (openerCount === 1) {
+      if (!(await searchInput.isVisible())) {
+        await this.openCompactSearchIfPresent();
+      }
+
+      await expect(searchInput).toBeVisible();
+    }
+  }
+
+  private async clickSearchButton(): Promise<void> {
+    const searchButton = this.page.getByRole('button', {
+      name: 'Search',
+      exact: true,
+    });
+
+    try {
+      await searchButton.click({ noWaitAfter: true });
+    } catch (error) {
+      if (!(await this.dismissObstructionIfVisible())) {
+        throw error;
+      }
+
+      await searchButton.click({ noWaitAfter: true });
+    }
+  }
+
+  private async openCompactSearchIfPresent(): Promise<void> {
+    // The compact header opener currently has no accessible name. Keep this
+    // observed, descriptive product selector private to the capability.
+    const compactSearchOpener = this.page.locator(
+      'button.c-header__mobile-nav__search:visible',
+    );
+    const openerCount = await compactSearchOpener.count();
+
+    if (openerCount > 1) {
+      throw new Error(
+        `Expected at most one compact search opener, received ${openerCount}.`,
+      );
+    }
+
+    if (openerCount === 1) {
+      try {
+        await compactSearchOpener.click();
+      } catch (error) {
+        if (!(await this.dismissObstructionIfVisible())) {
+          throw error;
+        }
+
         await compactSearchOpener.click();
       }
     }
+  }
 
-    await expect(searchInput).toBeVisible();
+  private async dismissObstructionIfVisible(): Promise<boolean> {
+    const obstructionAction = this.page
+      .getByRole('button', {
+        name: /^(Accept all(?: cookies)?|Continue in English)$/i,
+      })
+      .first();
+
+    if (!(await obstructionAction.isVisible())) {
+      return false;
+    }
+
+    await obstructionAction.click();
+    return true;
   }
 
   private async withTargetAccessCheck(

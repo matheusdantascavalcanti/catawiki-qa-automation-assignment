@@ -6,8 +6,8 @@ Implementation is underway. Work one phase at a time and update the status only 
 | ------------------------------------------------------------------------- | ----------- | --------------------------------------- | ------------------------------------------------------------------------------- |
 | [01 — Foundation](phase-01-foundation.md)                                 | Complete    | Approved planning documents             | Establish and audit the local Playwright/TypeScript foundation                  |
 | [01.5 — Collaboration foundation](phase-01-5-collaboration-foundation.md) | Complete    | Phase 01 audited and committed locally  | Establish private GitHub, PR conventions, and static CI                         |
-| [02 — Assignment scenario](phase-02-assignment-scenario.md)               | In progress | Phase 01.5 merged and static CI working | Deliver the required journey and first real framework API through a PR          |
-| [03 — Extra coverage](phase-03-extra-coverage.md)                         | Not started | Phase 02 merged and stable              | Demonstrate framework reuse through complementary coverage and a focused PR     |
+| [02 — Assignment scenario](phase-02-assignment-scenario.md)               | Complete    | Phase 01.5 merged and static CI working | Deliver the required journey and first real framework API through a PR          |
+| [03 — Extra coverage](phase-03-extra-coverage.md)                         | In progress | Phase 02 merged and stable              | Demonstrate framework reuse through complementary coverage and a focused PR     |
 | [04 — CI/CD](phase-04-ci.md)                                              | Not started | Phase 03 merged and locally reliable    | Expand CI to production smoke and manual risk-based regression through a PR     |
 | [05 — Final review](phase-05-final-review.md)                             | Not started | Phase 04 merged                         | Audit, clean up through a final PR, and release the private repository publicly |
 

@@ -90,10 +90,11 @@ npx playwright test --list --pass-with-no-tests
 
 Run the browserless parser suite directly with `npm run test:unit`; it is also part of
 `npm run check`. Run the mandatory production journey deliberately with
-`npm run test:smoke`. Networked tests use one worker, must never run from an editor
-watch task or automatic local hook, and must stop when target blocking or rate-limit
-evidence appears. Accessibility, mobile, and broader regression commands remain future
-phase work.
+`npm run test:smoke`. Use `npm run test:a11y` for the Enter-key/semantic contract,
+`npm run test:mobile` for the dedicated responsive project, and
+`npm run test:regression` only for an explicit broader local pass. Networked tests use
+one worker, must never run from an editor watch task or automatic local hook, and must
+stop when target blocking or rate-limit evidence appears.
 
 ## Contributor workflow
 
