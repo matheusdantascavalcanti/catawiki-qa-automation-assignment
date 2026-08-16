@@ -156,3 +156,30 @@ Revalidated on 2026-08-16 with the official browser-controlled Playwright surfac
   the first main-document request. Validation stopped after that single attempt; no
   user-agent change, alternate request client, retry loop, or protection bypass was
   attempted.
+
+## Phase 02 execution-blocker investigation
+
+Investigated on 2026-08-16 under the repository's Node 24 runtime:
+
+- Baseline `npm run test:smoke` used the `chromium` project, Playwright's default
+  headless mode, and a fresh ephemeral context. Its first and only main-document
+  navigation to `https://www.catawiki.com/en/` returned 403. The final URL remained the
+  initial URL and the bounded diagnostics classified the failure as `ENVIRONMENT`.
+- A fresh tab in the official in-app browser reached the same URL and rendered the
+  Catawiki home page and named search controls. This reconfirmed the access discrepancy
+  without reusing cookies in the Playwright Test run.
+- The real `assignment.spec.ts` passed once with headed Playwright-managed Chromium and
+  then passed all three attempts in the planned `--repeat-each=3` stability check.
+- The real spec also passed once with installed Google Chrome 151 in ordinary headless
+  mode. This ruled out headless execution by itself as the blocker; that local Chrome
+  installation was not selected as a repository dependency.
+- The smallest portable comparison, Playwright's documented `channel: 'chromium'`, ran
+  the full Playwright-managed Chromium browser in headless mode. The real spec passed
+  once and then passed all three planned repeat attempts.
+
+Playwright 1.62.1 resolves default headless Chromium to its separate
+`chromium-headless-shell` executable, while the explicit `chromium` channel selects the
+full managed Chromium executable. The bounded matrix therefore isolates the rejection
+to the default headless-shell execution path in this environment; it does not establish
+which private Akamai signal produced that decision. No stealth, fingerprint, header,
+cookie, proxy, CAPTCHA, or anti-detection mechanism was used.

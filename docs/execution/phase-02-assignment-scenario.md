@@ -1,6 +1,6 @@
 # Phase 02 — Required assignment scenario
 
-**Status:** Review findings resolved — pending follow-up independent review in PR #2
+**Status:** Execution blocker resolved locally — pending follow-up independent review in PR #2
 
 ## Objective
 
@@ -168,3 +168,26 @@ combobox and button. `npm run check` passed with all six parser cases. Standalon
 was not repeated after the already conclusive Akamai 403, and no bypass was attempted.
 PR #2 remains open and draft for follow-up review; the resolutions are not represented
 as independently verified or approved.
+
+## Execution-blocker resolution
+
+Resolved locally on 2026-08-16 with a bounded supported-mode investigation:
+
+- The unchanged baseline `npm run test:smoke` reproduced an Akamai 403 on the initial
+  `https://www.catawiki.com/en/` document. Diagnostics reported `ENVIRONMENT`, the final
+  URL remained the initial URL, and no product step ran.
+- The real spec passed in headed Playwright-managed Chromium and passed all three
+  planned repeat attempts.
+- The real spec passed once in installed Google Chrome 151 headless, showing that
+  headless execution alone was not the blocker.
+- The real spec passed in Playwright-managed full Chromium headless using the documented
+  `channel: 'chromium'` option and passed all three planned repeat attempts.
+- Playwright's local 1.62.1 implementation selects `chromium-headless-shell` for default
+  headless Chromium but the full managed executable for the explicit `chromium` channel.
+  The project now selects that standard channel; no browser identity, headers, cookies,
+  browser properties, proxy, or access-control behavior is manipulated.
+
+The supported reviewer command remains `npm run test:smoke` after `npm ci` and
+`npx playwright install chromium`. The journey is anonymous and read-only. Local
+repeatability resolves the Phase 02 execution blocker, but Phase 04 must still validate
+whether GitHub-hosted runner traffic is accepted before making live browser CI mandatory.

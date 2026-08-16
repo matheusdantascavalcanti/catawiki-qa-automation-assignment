@@ -25,6 +25,12 @@ Install the exact dependency graph recorded in `package-lock.json`:
 npm ci
 ```
 
+Before the live smoke journey, install Playwright's managed Chromium browser:
+
+```bash
+npx playwright install chromium
+```
+
 ## Validate
 
 Run the complete browserless quality gate:
@@ -50,7 +56,9 @@ npm run test:smoke
 ```
 
 Networked execution uses one worker, remains anonymous and read-only, and must stop on
-target blocking or rate-limit evidence. Never use the suite to bypass WAF controls.
+target blocking or rate-limit evidence. The Chromium project uses Playwright's supported
+`chromium` channel so headless execution runs the full managed browser rather than the
+separate headless shell. Never use the suite to bypass WAF controls.
 
 ## Framework API
 
