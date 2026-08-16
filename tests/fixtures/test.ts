@@ -11,6 +11,14 @@ interface ProductFixtures {
   lot: LotDetails;
 }
 
+type RuntimeGlobal = typeof globalThis & {
+  process?: { env?: { CI_FEASIBILITY_EVIDENCE?: string } };
+};
+
+const recordFeasibilityEvidence = Boolean(
+  (globalThis as RuntimeGlobal).process?.env?.CI_FEASIBILITY_EVIDENCE,
+);
+
 const diagnosticsByPage = new WeakMap<Page, NetworkDiagnostics>();
 
 function diagnosticsFor(page: Page): NetworkDiagnostics {
@@ -33,6 +41,16 @@ export const test = base.extend<ProductFixtures>({
 
     diagnostics.stop();
     diagnosticsByPage.delete(page);
+    if (recordFeasibilityEvidence) {
+      const summary = diagnostics.summary();
+      console.log(
+        `Feasibility navigation evidence: ${JSON.stringify({
+          classification: summary.classification,
+          finalUrl: summary.finalUrl,
+          mainDocuments: summary.mainDocuments,
+        })}`,
+      );
+    }
     if (testInfo.status !== testInfo.expectedStatus) {
       await testInfo.attach('network-diagnostics.json', {
         body: JSON.stringify(diagnostics.summary(), null, 2),
