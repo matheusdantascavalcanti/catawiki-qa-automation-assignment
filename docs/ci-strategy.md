@@ -4,7 +4,9 @@
 
 CI should give reviewers fast, trustworthy feedback without treating Catawiki production as an unlimited test environment. Static quality is cheap and deterministic; browser execution is deliberately small, serial, and read-only.
 
-No workflow is created during planning. CI evolves in two deliberate stages so contributor guardrails exist before product automation begins landing, while live production-browser CI is introduced only after the browser suite demonstrates local reliability.
+CI evolved in two deliberate stages so contributor guardrails existed before product
+automation landed, while live production-browser CI followed local and hosted
+feasibility evidence.
 
 ## Stage 1 — Collaboration gate
 
@@ -36,7 +38,7 @@ The Chromium job depends on successful static checks. This avoids production tra
 
 ## Contributor commands
 
-The planned final scripts are:
+The contributor scripts are:
 
 | Command                          | Purpose                                                      | Contacts Catawiki? |
 | -------------------------------- | ------------------------------------------------------------ | ------------------ |
@@ -91,7 +93,10 @@ Run on pull requests and main-branch changes:
 6. Run `npm run test:smoke` with one worker.
 7. Publish HTML report, traces, screenshots, and diagnostic attachments on failure/flakiness.
 
-The smoke gate is Chromium-only and contains the mandatory journey. It extends the existing static workflow; the browser job depends on static success to avoid unnecessary production traffic when code quality already fails.
+The smoke gate is Chromium-only and contains the mandatory journey. It extends the
+existing static workflow; `needs: quality` prevents browser setup and production
+traffic when code quality already fails. Failed or flaky browser-test steps upload the
+HTML report and `test-results` for seven days; clean runs upload nothing.
 
 The Chromium project explicitly uses Playwright's `chromium` channel. This selects the
 full managed browser in headless mode; the separate default headless shell received an
@@ -103,8 +108,7 @@ execution on GitHub-hosted Ubuntu. The feasibility work exposed synchronization 
 known-consent-action matching defects; after those were corrected, the real smoke
 passed with one worker and zero retries in hosted run
 [31962223174](https://github.com/matheusdantascavalcanti/catawiki-qa-automation-assignment/actions/runs/31962223174).
-This completes pre-implementation feasibility only. The mandatory gate, its dependency
-on static quality, final retry semantics, and artifact policy remain Phase 04 work.
+Phase 04 retained that browser path in the dependent mandatory gate.
 
 Use a concurrency group keyed by workflow plus pull-request/branch reference and cancel superseded PR runs. This limits stale traffic and keeps feedback relevant.
 
@@ -137,7 +141,7 @@ The template communicates intent rather than creating a compliance checklist. A 
 
 ## Manual broader regression
 
-Expose a `workflow_dispatch` workflow with independent project results:
+The `workflow_dispatch` workflow exposes independent project results:
 
 ```yaml
 strategy:
@@ -168,7 +172,7 @@ Keep `fail-fast: false`: serial jobs should continue after one browser fails so 
 
 - Use Playwright's standard HTML reporter; do not add Allure or a custom reporter.
 - Give artifacts project-specific names in the manual matrix.
-- Retain failure artifacts briefly, proposed seven days, because the repository contains no long-term production observability need.
+- Retain failure artifacts for seven days because the repository contains no long-term production observability need.
 - Do not upload successful traces.
 - Do not merge blob reports: independent project reports provide clearer ownership for four serial jobs.
 

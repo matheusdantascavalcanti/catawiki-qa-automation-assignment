@@ -307,3 +307,18 @@ against in-memory page content.
 
 **Alternatives:** Retain capability-specific recovery, create a generic dialog handler,
 force clicks, add sleeps, or retry arbitrary failed actions.
+
+## D028 — Retain browser evidence only for failed or flaky runs
+
+**Status:** Accepted
+
+**Context:** A controlled network-free CI run proved that the standard HTML report,
+first-attempt and retry traces, screenshot, error context, and bounded diagnostics can
+be downloaded together. Clean hosted smoke runs need no retained artifact.
+
+**Decision:** Upload `playwright-report` and `test-results` only when the browser-test
+step fails, with project-specific names and seven-day retention. A retry pass remains a
+failed flaky signal.
+
+**Alternatives:** Upload every clean run, retain artifacts long-term, or add a custom
+reporter or external dashboard.

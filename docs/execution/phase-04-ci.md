@@ -1,6 +1,6 @@
 # Phase 04 — Product/browser CI expansion
 
-**Status:** Pre-implementation feasibility complete; Phase 04 implementation not started
+**Status:** Implementation in progress; independent review pending
 
 ## Objective
 
@@ -124,19 +124,26 @@ The temporary manual feasibility workflow, its special console evidence switch, 
 its experiment-only artifact path were removed after the question was answered.
 Historical evidence remains here instead of as a permanently executable experiment.
 
-## Remaining Phase 04 work
+## Phase 04 implementation evidence
 
-Final Phase 04 implementation has not started. It still must:
+Draft PR #5 on `ci/production-test-strategy` extends the original workflow rather than
+replacing it. The static job retains read-only permissions, npm caching, concurrency
+cancellation, `npm ci`, and `npm run check`. `Chromium @smoke` declares
+`needs: quality`, installs only managed Chromium, and runs the real `@smoke` with one
+worker.
 
-- extend static quality with a dependent mandatory Chromium smoke job;
-- apply the accepted one-retry, isolated retry, fail-on-flaky policy;
-- publish the final bounded failure/flaky artifact set with an agreed retention period;
-- preserve read-only permissions and concurrency cancellation;
-- add and validate the serial manual Chromium, Firefox, WebKit, and mobile-Chromium
-  regression matrix with project-specific artifacts;
-- document reproduction and artifact interpretation, then complete independent review.
+- [31963527059](https://github.com/matheusdantascavalcanti/catawiki-qa-automation-assignment/actions/runs/31963527059)
+  ran Node 24.19.0, completed static quality first, then passed the real Train smoke in
+  20.5 seconds with zero retries. Its clean run skipped artifact upload.
+- [31963622791](https://github.com/matheusdantascavalcanti/catawiki-qa-automation-assignment/actions/runs/31963622791)
+  used a temporary formatting failure. Static quality failed and GitHub recorded the
+  dependent Chromium job as skipped with zero steps, so no browser traffic occurred.
+- [31963411884](https://github.com/matheusdantascavalcanti/catawiki-qa-automation-assignment/actions/runs/31963411884)
+  used one temporary network-free fixture contract. Attempt zero failed, retry one
+  passed, Playwright reported `1 flaky`, and `failOnFlakyTests` kept the job red. Its
+  seven-day artifact downloaded successfully and contained the HTML report, first and
+  retry traces, failure screenshot, error context, and bounded diagnostics JSON.
 
-The final work must retain one network worker, avoid schedules and WAF workarounds, and
-prove the static-to-browser dependency and matrix serialization in the implemented
-workflows. None of those final browser-gate or regression workflows are part of the
-feasibility-closeout increment.
+All controlled validation files were removed immediately after their proof. Manual
+matrix execution, serialization evidence, cancellation evidence, final documentation,
+and independent review remain before implementation closeout.

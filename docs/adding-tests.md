@@ -115,7 +115,10 @@ After the private collaboration foundation exists:
 
 The implementation session owns the change, validation, documentation, and accurate PR description. A fresh review session evaluates it as Staff QA engineer, framework maintainer, and future consumer before any review-driven edits. Agent-assisted review is not represented as a human approval.
 
-Before Phase 04, static CI runs `npm run check` while browser validation remains local. After Phase 04, the PR gate also includes the conservative Chromium smoke. In both stages, CI success supplements rather than replaces local product validation.
+CI runs `npm run check` first and starts the conservative Chromium `@smoke` only after
+static success. The four-project compatibility workflow remains a deliberate manual
+dispatch and runs one project at a time. CI success supplements rather than replaces
+local product validation.
 
 ## Contributor checklist
 
