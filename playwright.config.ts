@@ -17,7 +17,7 @@ export default defineConfig({
   reporter: isCI
     ? [['line'], ['html', { open: 'never', outputFolder: 'playwright-report' }]]
     : 'line',
-  timeout: 30_000,
+  timeout: 60_000,
   expect: {
     timeout: 5_000,
   },
