@@ -15,7 +15,7 @@ This is an architectural requirement, not presentation language.
 All browser tests import the project's fixture module:
 
 ```ts
-import { test, expect } from '../fixtures/test';
+import { test, expect } from '../fixtures/test.js';
 
 test('opens the observed second lot', async ({ search, results, lot }) => {
   await search.open();
@@ -56,7 +56,7 @@ Keep these private to `src/` and fixture composition:
 
 Tests should not receive raw locators from capability reads. They should receive stable domain observations.
 
-## Proposed structure
+## Structure
 
 ```text
 src/
@@ -243,29 +243,6 @@ The architecture succeeds when another engineer can:
 - Chromium runs the complete browser portfolio; Firefox/WebKit run the required journey; mobile Chromium runs the responsive scenario.
 - Desktop and mobile Chromium projects use Playwright's full managed `chromium` channel.
 - Reporter: concise terminal output locally and standard HTML artifacts in CI. No custom reporter.
-
-## Reference repository assessment
-
-The reference repository [nickIsNotUnique/test-automation-playwright-ts](https://github.com/nickIsNotUnique/test-automation-playwright-ts) is inspiration, not a template.
-
-Worth adapting:
-
-- clear separation of static checks and browser suites;
-- predictable npm scripts;
-- smoke versus broader execution intent;
-- browser projects;
-- PR concurrency cancellation;
-- failure artifact publication;
-- concise README guidance.
-
-Not worth adapting here:
-
-- reusable workflow indirection for a tiny repository;
-- broad PR browser matrices;
-- sharding or multiple workers;
-- elaborate page-object layering;
-- reporting infrastructure beyond Playwright's reporters;
-- any pattern that assumes a controlled application rather than an external production target.
 
 ## Explicit non-abstractions
 

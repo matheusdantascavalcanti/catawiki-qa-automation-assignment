@@ -97,19 +97,21 @@ Parser unit
 
 An extra scenario that introduces separate browser initialization, overlay handling, URL parsing, or reporting plumbing fails review. A new capability is acceptable only for genuinely new reusable product behavior.
 
-The PR sequence should make that leverage reviewable:
+The delivery sequence makes that leverage reviewable:
 
 ```text
-Phase 02 PR
+Mandatory-journey PR
   larger framework-establishing increment
   → search, results, lot, domain types, parsing, diagnostics
 
-Phase 03 PR
+Complementary-coverage PR
   smaller incremental change
   → complementary scenarios primarily compose existing capabilities
 ```
 
-The size difference is not a quota: Phase 03 should be smaller because groundwork exists, not because valuable behavior is omitted. Its review should flag substantial new browser plumbing and reject tests added merely to make the PR appear larger.
+The size difference is not a quota: complementary coverage should be smaller because
+groundwork exists, not because valuable behavior is omitted. Review should flag
+substantial new browser plumbing and reject tests added only to increase test count.
 
 ## Exit criteria
 

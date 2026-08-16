@@ -1,6 +1,7 @@
 # Decision log
 
-Statuses reflect the approved planning baseline. Implementation evidence may supersede a decision through a new entry; do not silently rewrite history.
+Statuses reflect the implemented design. Later evidence may supersede a decision through
+a new entry rather than silently rewriting its rationale.
 
 ## D001 — Use Playwright + TypeScript
 
@@ -8,7 +9,8 @@ Statuses reflect the approved planning baseline. Implementation evidence may sup
 
 **Context:** The assignment is a browser journey with responsive and accessibility interests. Current Playwright provides typed fixtures, web-first assertions, traces, device projects, and report attachments in one proportionate toolchain.
 
-**Decision:** Use Playwright 1.62.x with strict TypeScript 6.0.x, subject to exact compatible patch versions being locked in Phase 01.
+**Decision:** Use Playwright 1.62.x with strict TypeScript 6.0.x and lock compatible
+patch versions in `package-lock.json`.
 
 **Alternatives:** Selenium/WebDriver, Cypress, JavaScript without strict typing.
 
@@ -182,59 +184,16 @@ Statuses reflect the approved planning baseline. Implementation evidence may sup
 
 **Alternatives:** Test accounts or mutation flows are appropriate only with Catawiki-owned environments and authorization.
 
-## D019 — Reject architecture theatre
+## D019 — Keep architecture proportionate
 
 **Status:** Accepted
 
-**Context:** Seniority is demonstrated by justified tradeoffs rather than technology count.
+**Context:** The repository should add tools and abstractions only when they address an
+observed product, maintenance, diagnostic, or contributor risk.
 
 **Decision:** Do not add BDD, DI, BasePage/PageFactory, service containers, generic wrappers, Allure, custom reporters, Docker/Kubernetes, Faker, Lighthouse, broad visual/Axe scans, route mocking, GraphQL/contract frameworks, test-management integrations, sharding, or parallel workers without a new evidenced requirement.
 
-**Alternatives:** Add technologies solely to make the repository appear larger or more enterprise-like.
-
-## D020 — Private-first repository lifecycle
-
-**Status:** Accepted
-
-**Context:** The assignment requires a public GitHub repository for submission, while repository-development privacy is preferable until the work is audited and ready. The project should still demonstrate realistic pull-request development rather than appear as a finished one-time upload.
-
-**Decision:** Keep Phase 01 local. After its audit, Phase 01.5 creates `catawiki-qa-automation-assignment` as a private GitHub repository. Use that private repository for branches, pull requests, reviews, and CI. Keep it private through final review and change it to public only after the final approved PR is merged and repository hygiene is verified.
-
-**Why:** This preserves a reviewable collaboration history and real CI evidence while delaying public exposure until submission readiness.
-
-**Alternatives:** Developing every phase locally and publishing one finished snapshot loses evidence of framework evolution. Making the repository public immediately after Phase 01 exposes it before public visibility is required.
-
-## D021 — Use PR-driven increments with independent agent-assisted review
-
-**Status:** Accepted
-
-**Context:** The framework is intended for collaborative extension, so its delivery process should expose architectural intent and reviewability as it grows.
-
-**Decision:** After Phase 01.5, implement each substantial phase on a focused branch through a cohesive PR. A fresh agent/session first reviews the result without modifying it, from Staff QA Automation Engineer, framework-maintainer, and future-consumer perspectives. The implementation session evaluates and addresses valid findings before merge.
-
-**Why:** Separating implementation and review reduces author bias and demonstrates maintainability without pretending an agent review is a human approval.
-
-**Alternatives:** Direct commits to `main`, one final mega-PR, automatically applying every finding, or fabricating reviewers/approvals.
-
-## D022 — Preserve clean but authentic Git history
-
-**Status:** Accepted
-
-**Context:** Commit and PR boundaries can demonstrate how the groundwork enabled later changes, but manufactured or excessively polished history would be misleading.
-
-**Decision:** Retain meaningful commits and phase PR boundaries. Fix accidental noise before merge where practical, use intentional messages, and keep the history representative of actual work. Do not squash the entire assignment at submission time or manufacture timestamps, commits, comments, reviewers, or approvals.
-
-**Alternatives:** One submission commit, dozens of meaningless microcommits, or presentation-only history reconstruction.
-
-## D023 — Keep collaboration mechanics proportionate
-
-**Status:** Accepted
-
-**Context:** This is a small take-home with one contributor. Collaboration discipline is valuable; enterprise ceremony without a real need is not.
-
-**Decision:** Use the sequence branch → PR → CI → independent review → improve → merge, supported by a concise PR template and staged CI.
-
-**Alternatives:** Fake Jira tickets, project boards, sprint planning, fake reviewers, mandatory CODEOWNERS, semantic release, release trains, automated version bumps/changelogs, complex merge queues, multiple approval rules, unnecessary branch-protection theatre, or unused issue templates.
+**Alternatives:** Add technologies or framework layers without a concrete requirement.
 
 ## D024 — Use Playwright-managed full Chromium for the live smoke
 
@@ -242,7 +201,7 @@ Statuses reflect the approved planning baseline. Implementation evidence may sup
 
 **Context:** Playwright 1.62.1's default headless Chromium path uses the separate
 `chromium-headless-shell` executable, which received an Akamai 403 on Catawiki's initial
-document in the local Phase 02 investigation. The real assignment spec passed in headed
+document in a bounded local investigation. The real assignment spec passed in headed
 managed Chromium, installed Chrome headless, and managed full Chromium headless through
 the documented `channel: 'chromium'` option. The selected managed channel passed the
 planned three-attempt repeat check.
@@ -261,9 +220,9 @@ access-control bypass remains prohibited.
 
 **Status:** Accepted
 
-**Context:** The Phase 02 investigation established that the default Playwright
+**Context:** The browser investigation established that the default Playwright
 headless-shell path was rejected locally while the documented full managed Chromium
-channel passed. The Phase 03 mobile test must use the actual device project and contact
+channel passed. The mobile test must use the actual device project and contact
 the same target through an executable runner path.
 
 **Decision:** Configure `mobile-chromium` with the Pixel 7 device profile plus

@@ -9,7 +9,7 @@ Import the project fixture, not `@playwright/test` directly. ESLint rejects dire
 the intentional exception that re-exports Playwright for test authors:
 
 ```ts
-import { test, expect } from '../fixtures/test';
+import { test, expect } from '../fixtures/test.js';
 
 test('search behavior', async ({ search, results }) => {
   await search.open();
@@ -111,10 +111,13 @@ After the private collaboration foundation exists:
 6. Run only the relevant browser validation with one worker when applicable.
 7. Open or update the PR using `Why`, `What changed`, `Framework impact`, `Validation`, and `Risks / tradeoffs`.
 8. Review CI results and keep the description aligned with actual evidence.
-9. Have a fresh review session inspect first; evaluate and address evidence-based findings.
+9. Have an independent reviewer inspect the change; evaluate and address evidence-based findings.
 10. Merge only when the increment is cohesive, documented, and validated.
 
-The implementation session owns the change, validation, documentation, and accurate PR description. A fresh review session evaluates it as Staff QA engineer, framework maintainer, and future consumer before any review-driven edits. Agent-assisted review is not represented as a human approval.
+The author owns the change, validation, documentation, and accurate PR description.
+Independent review should consider the Staff QA engineer, framework maintainer, and
+future consumer perspectives; CI evidence supplements that review rather than replacing
+it.
 
 CI runs `npm run check` first and starts the conservative Chromium `@smoke` only after
 static success. The four-project compatibility workflow remains a deliberate manual
