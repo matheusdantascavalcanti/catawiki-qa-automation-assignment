@@ -2,12 +2,16 @@ name: Manual browser regression
 
 on:
   workflow_dispatch:
+  push:
+    branches:
+      - ci/production-test-strategy
 
 permissions:
   contents: read
 
 jobs:
   regression:
+    if: github.event_name == 'workflow_dispatch'
     name: ${{ matrix.project }} regression
     runs-on: ubuntu-latest
     timeout-minutes: 20
