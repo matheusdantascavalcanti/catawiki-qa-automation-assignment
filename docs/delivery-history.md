@@ -11,8 +11,8 @@ and CI expansion remain visible without retaining implementation-session checkli
 | Complementary coverage | Keyboard semantics, mobile search, fallback results, and visible framework reuse             | [#3](https://github.com/matheusdantascavalcanti/catawiki-qa-automation-assignment/pull/3) |
 | Hosted feasibility     | Confirmed managed Chromium on GitHub-hosted Ubuntu; removed the temporary workflow afterward | [#4](https://github.com/matheusdantascavalcanti/catawiki-qa-automation-assignment/pull/4) |
 | Production-aware CI    | Dependent Chromium smoke and serial dispatch-only browser/device regression                  | [#5](https://github.com/matheusdantascavalcanti/catawiki-qa-automation-assignment/pull/5) |
-| Submission readiness   | Reviewer path, documentation subtraction, history/privacy audit, and evidence reconciliation | Awaiting independent review                                                               |
+| Submission readiness   | Reviewer path, documentation subtraction, history/privacy audit, and evidence reconciliation | [#6](https://github.com/matheusdantascavalcanti/catawiki-qa-automation-assignment/pull/6) |
 
-Phase 04 is complete at merge commit `5caa90e`. Phase 05 remains unmerged until a
-fresh independent final review is complete. Repository visibility remains private
-during that review.
+Phase 04 completed at merge commit `5caa90e`, and Phase 05 completed at merge commit
+`111bca7`. Final validation was performed while the repository was private, after which
+it was made public for submission.
