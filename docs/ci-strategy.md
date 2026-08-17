@@ -10,20 +10,22 @@ feasibility evidence.
 
 ## Stage 1 — Collaboration gate
 
-Phase 01.5 creates the first workflow in the private repository. It runs on pull requests and relevant `main` changes:
+The first workflow runs on pull requests and relevant `main` changes:
 
 ```text
 npm ci
 npm run check
 ```
 
-This gate is fast, network-free, and useful for every later phase. It uses read-only permissions, npm caching through the lockfile, and concurrency cancellation for superseded PR runs. It installs no browser and sends no request to Catawiki.
+This gate is fast, network-free, and useful for every change. It uses read-only
+permissions, npm caching through the lockfile, and concurrency cancellation for
+superseded PR runs. It installs no browser and sends no request to Catawiki.
 
-The bootstrap workflow itself is introduced through the focused collaboration-foundation PR after the audited Phase 01 baseline is first pushed to private `main`.
+It established deterministic contributor feedback before any live-browser CI was added.
 
 ## Stage 2 — Product/browser gates
 
-Phase 04 expands rather than replaces Stage 1:
+The product/browser gate expands rather than replaces Stage 1:
 
 ```text
 Pull request:
@@ -49,9 +51,9 @@ The contributor scripts are:
 | `npm run test:regression`        | Explicit configured browser/device portfolio                 | Yes                |
 | `npm run test:mobile`            | Mobile Chromium scenario                                     | Yes                |
 | `npm run test:a11y`              | Narrow Chromium keyboard/semantics case                      | Yes                |
-| `npm run test:ui`                | Interactive Chromium debugging                               | Yes                |
 
-`npm run check` is the normal while-coding command. Before Phase 04 it reproduces the complete PR gate. After Phase 04, `npm run check && npm run test:smoke` reproduces the static plus browser gate for browser-facing changes.
+`npm run check` is the normal while-coding command. `npm run check && npm run
+test:smoke` reproduces the current static plus browser gate for browser-facing changes.
 
 ## Playwright failure policy
 
@@ -102,13 +104,13 @@ The Chromium project explicitly uses Playwright's `chromium` channel. This selec
 full managed browser in headless mode; the separate default headless shell received an
 initial-document Akamai 403 locally, while the selected channel completed the real spec
 across the planned repeat check. `npx playwright install --with-deps chromium` supplies
-the required browser in GitHub Actions. Phase 04 feasibility has since proven HTTP 200
+the required browser in GitHub Actions. Hosted feasibility proved HTTP 200
 reachability without WAF rejection and proven managed full Chromium installation and
 execution on GitHub-hosted Ubuntu. The feasibility work exposed synchronization and
 known-consent-action matching defects; after those were corrected, the real smoke
 passed with one worker and zero retries in hosted run
 [31962223174](https://github.com/matheusdantascavalcanti/catawiki-qa-automation-assignment/actions/runs/31962223174).
-Phase 04 retained that browser path in the dependent mandatory gate.
+The dependent mandatory gate retains that browser path.
 
 Use a concurrency group keyed by workflow plus pull-request/branch reference and cancel superseded PR runs. This limits stale traffic and keeps feedback relevant.
 
@@ -123,7 +125,7 @@ No secrets, write permissions, deployment environments, or pull-request mutation
 
 ## Pull-request communication and review
 
-Substantial phase PRs use a concise description:
+Substantial PRs use a concise description:
 
 ```markdown
 ## Why
@@ -137,7 +139,10 @@ Substantial phase PRs use a concise description:
 ## Risks / tradeoffs
 ```
 
-The template communicates intent rather than creating a compliance checklist. A fresh agent/session reviews the PR before review-driven modification; CI results inform that review but do not replace local product validation or authorize automatic merge. Agent-assisted review is never represented as another human's approval.
+The template communicates intent rather than creating a compliance checklist.
+Independent review considers product risk, framework maintenance, and future-consumer
+experience. CI results inform that review but do not replace local product validation
+or authorize automatic merge.
 
 ## Manual broader regression
 
@@ -198,7 +203,7 @@ Do not add scheduled/nightly execution against Catawiki production.
 
 Reasons:
 
-- The public take-home has no controlled test data or target availability agreement.
+- This external-facing repository has no controlled test data or target availability agreement.
 - Scheduled runs create repeated external traffic without an operational owner.
 - Auction data and catalogue state are legitimately dynamic.
 - A nightly suite is more appropriate against internal staging/pre-production with test accounts, factories, controlled clocks, and service-level contracts.

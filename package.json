@@ -2,7 +2,7 @@
   "name": "catawiki-qa-automation-assignment",
   "version": "0.0.0",
   "private": true,
-  "description": "Risk-based Playwright and TypeScript QA automation foundation",
+  "description": "Risk-based Playwright and TypeScript QA automation for Catawiki's read-only buyer journey",
   "type": "module",
   "engines": {
     "node": ">=24 <25"
