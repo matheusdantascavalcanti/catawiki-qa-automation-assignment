@@ -21,6 +21,13 @@ npm run test:smoke
 for one worker; run it deliberately rather than from a watch task or automatic hook.
 The project requires Node `>=24 <25` and uses npm's committed lockfile.
 
+## AI assistance
+
+AI-assisted development tools, including Codex, were used during this assignment for
+research, code review, implementation support, and iterative validation. The
+architecture, testing strategy, tradeoffs, and final implementation decisions were
+reviewed and validated by me.
+
 For network-free validation first:
 
 ```bash
